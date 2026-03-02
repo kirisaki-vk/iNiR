@@ -422,6 +422,165 @@ ContentPage {
     }
 
     // ═══════════════════════════════════════════════════════════════════
+    // RESOURCES
+    // ═══════════════════════════════════════════════════════════════════
+    SettingsCardSection {
+        visible: root.isIiActive
+        expanded: false
+        icon: "browse_activity"
+        title: Translation.tr("Resources")
+
+        SettingsGroup {
+            StyledText {
+                Layout.fillWidth: true
+                text: Translation.tr("Choose which indicators are shown in the resources module")
+                color: Appearance.colors.colSubtext
+                font.pixelSize: Appearance.font.pixelSize.smaller
+            }
+
+            ConfigRow {
+                uniform: true
+                SettingsSwitch {
+                    buttonIcon: "memory"
+                    text: Translation.tr("Show RAM indicator")
+                    checked: Config.options?.bar?.resources?.showMemoryIndicator ?? true
+                    onCheckedChanged: Config.setNestedValue("bar.resources.showMemoryIndicator", checked)
+                }
+                SettingsSwitch {
+                    buttonIcon: "thermostat"
+                    text: Translation.tr("Show temp indicator")
+                    checked: Config.options?.bar?.resources?.showTempIndicator ?? true
+                    onCheckedChanged: Config.setNestedValue("bar.resources.showTempIndicator", checked)
+                }
+            }
+
+            ConfigRow {
+                uniform: true
+                SettingsSwitch {
+                    buttonIcon: "planner_review"
+                    text: Translation.tr("Show CPU indicator")
+                    checked: Config.options?.bar?.resources?.showCpuIndicator ?? true
+                    onCheckedChanged: Config.setNestedValue("bar.resources.showCpuIndicator", checked)
+                }
+                SettingsSwitch {
+                    buttonIcon: "videocam"
+                    text: Translation.tr("Show GPU indicator")
+                    checked: Config.options?.bar?.resources?.showGpuIndicator ?? true
+                    onCheckedChanged: Config.setNestedValue("bar.resources.showGpuIndicator", checked)
+                }
+            }
+
+            ConfigRow {
+                uniform: true
+                SettingsSwitch {
+                    buttonIcon: "swap_horiz"
+                    text: Translation.tr("Show swap indicator")
+                    checked: Config.options?.bar?.resources?.showSwapIndicator ?? true
+                    onCheckedChanged: Config.setNestedValue("bar.resources.showSwapIndicator", checked)
+                }
+                Item { Layout.fillWidth: true }
+            }
+
+            SettingsDivider {}
+
+            ConfigRow {
+                uniform: true
+                SettingsSwitch {
+                    buttonIcon: "visibility"
+                    text: Translation.tr("Always show CPU")
+                    checked: Config.options?.bar?.resources?.alwaysShowCpu ?? true
+                    onCheckedChanged: Config.setNestedValue("bar.resources.alwaysShowCpu", checked)
+                }
+                SettingsSwitch {
+                    buttonIcon: "visibility"
+                    text: Translation.tr("Always show GPU")
+                    checked: Config.options?.bar?.resources?.alwaysShowGpu ?? true
+                    onCheckedChanged: Config.setNestedValue("bar.resources.alwaysShowGpu", checked)
+                }
+            }
+
+            ConfigRow {
+                uniform: true
+                SettingsSwitch {
+                    buttonIcon: "visibility"
+                    text: Translation.tr("Always show temp")
+                    checked: Config.options?.bar?.resources?.alwaysShowTemp ?? true
+                    onCheckedChanged: Config.setNestedValue("bar.resources.alwaysShowTemp", checked)
+                }
+                Item { Layout.fillWidth: true }
+            }
+
+            SettingsDivider {}
+
+            ConfigRow {
+                uniform: true
+                ConfigSpinBox {
+                    icon: "memory"
+                    text: Translation.tr("RAM warning (%)")
+                    value: Config.options?.bar?.resources?.memoryWarningThreshold ?? 90
+                    from: 50
+                    to: 100
+                    stepSize: 1
+                    onValueChanged: Config.setNestedValue("bar.resources.memoryWarningThreshold", value)
+                }
+                ConfigSpinBox {
+                    icon: "planner_review"
+                    text: Translation.tr("CPU warning (%)")
+                    value: Config.options?.bar?.resources?.cpuWarningThreshold ?? 90
+                    from: 50
+                    to: 100
+                    stepSize: 1
+                    onValueChanged: Config.setNestedValue("bar.resources.cpuWarningThreshold", value)
+                }
+            }
+
+            ConfigRow {
+                uniform: true
+                ConfigSpinBox {
+                    icon: "videocam"
+                    text: Translation.tr("GPU warning (%)")
+                    value: Config.options?.bar?.resources?.gpuWarningThreshold ?? 90
+                    from: 50
+                    to: 100
+                    stepSize: 1
+                    onValueChanged: Config.setNestedValue("bar.resources.gpuWarningThreshold", value)
+                }
+                ConfigSpinBox {
+                    icon: "swap_horiz"
+                    text: Translation.tr("Swap warning (%)")
+                    value: Config.options?.bar?.resources?.swapWarningThreshold ?? 85
+                    from: 50
+                    to: 100
+                    stepSize: 1
+                    onValueChanged: Config.setNestedValue("bar.resources.swapWarningThreshold", value)
+                }
+            }
+
+            ConfigRow {
+                uniform: true
+                ConfigSpinBox {
+                    icon: "thermostat"
+                    text: Translation.tr("Temp caution (°C)")
+                    value: Config.options?.bar?.resources?.tempCautionThreshold ?? 65
+                    from: 40
+                    to: 100
+                    stepSize: 1
+                    onValueChanged: Config.setNestedValue("bar.resources.tempCautionThreshold", value)
+                }
+                ConfigSpinBox {
+                    icon: "device_thermostat"
+                    text: Translation.tr("Temp warning (°C)")
+                    value: Config.options?.bar?.resources?.tempWarningThreshold ?? 80
+                    from: 50
+                    to: 120
+                    stepSize: 1
+                    onValueChanged: Config.setNestedValue("bar.resources.tempWarningThreshold", value)
+                }
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
     // MEDIA
     // ═══════════════════════════════════════════════════════════════════
     SettingsCardSection {

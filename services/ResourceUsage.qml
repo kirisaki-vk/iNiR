@@ -28,6 +28,7 @@ Singleton {
     property real swapUsedPercentage: swapTotal > 0 ? (swapUsed / swapTotal) : 0
     property real cpuUsage: 0
     property var previousCpuStats
+    property real gpuUsage: 0
 
     // Temperature properties (in Celsius)
     property int cpuTemp: 0
@@ -44,9 +45,11 @@ Singleton {
     property string maxAvailableMemoryString: kbToGbString(ResourceUsage.memoryTotal)
     property string maxAvailableSwapString: kbToGbString(ResourceUsage.swapTotal)
     property string maxAvailableCpuString: "--"
+    property string maxAvailableGpuString: "100%"
 
     readonly property int historyLength: Config.options?.resources?.historyLength ?? 60
     property list<real> cpuUsageHistory: []
+    property list<real> gpuUsageHistory: []
     property list<real> memoryUsageHistory: []
     property list<real> swapUsageHistory: []
 
@@ -58,6 +61,56 @@ Singleton {
         memoryUsageHistory = [...memoryUsageHistory, memoryUsedPercentage]
         if (memoryUsageHistory.length > historyLength) {
             memoryUsageHistory.shift()
+        }
+    }
+
+    Process {
+        id: detectGpuUsageSource
+        // Prefer native DRM sysfs counters. Fall back to nvidia-smi if present.
+        command: ["/usr/bin/bash", "-c", `
+            for card in /sys/class/drm/card*; do
+                path="$card/device/gpu_busy_percent"
+                if [ -f "$path" ]; then
+                    echo "sysfs:$path"
+                    exit 0
+                fi
+            done
+
+            if command -v nvidia-smi >/dev/null 2>&1; then
+                echo "nvidia-smi"
+                exit 0
+            fi
+
+            echo "none"
+        `]
+        stdout: SplitParser {
+            onRead: line => {
+                if (line.startsWith("sysfs:")) {
+                    root._gpuUsageSource = "sysfs"
+                    root._gpuUsagePath = line.slice(6)
+                } else if (line === "nvidia-smi") {
+                    root._gpuUsageSource = "nvidia-smi"
+                } else if (line === "none") {
+                    root._gpuUsageSource = "none"
+                }
+            }
+        }
+    }
+
+    Process {
+        id: nvidiaGpuUsageProc
+        command: ["/usr/bin/bash", "-c", "/usr/bin/nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | /usr/bin/head -n 1"]
+        running: false
+        stdout: StdioCollector {
+            id: nvidiaGpuUsageCollector
+            onStreamFinished: {
+                const raw = parseInt(nvidiaGpuUsageCollector.text.trim())
+                if (isNaN(raw)) {
+                    root.gpuUsage = 0
+                } else {
+                    root.gpuUsage = root.clampPercentToUnit(raw / 100)
+                }
+            }
         }
     }
     function updateSwapUsageHistory() {
@@ -72,10 +125,21 @@ Singleton {
             cpuUsageHistory.shift()
         }
     }
+    function updateGpuUsageHistory() {
+        gpuUsageHistory = [...gpuUsageHistory, gpuUsage]
+        if (gpuUsageHistory.length > historyLength) {
+            gpuUsageHistory.shift()
+        }
+    }
     function updateHistories() {
         updateMemoryUsageHistory()
         updateSwapUsageHistory()
         updateCpuUsageHistory()
+        updateGpuUsageHistory()
+    }
+
+    function clampPercentToUnit(value: real): real {
+        return Math.max(0, Math.min(1, value))
     }
 
 
@@ -84,6 +148,7 @@ Singleton {
 		if (!root._initRequested) {
 			root._initRequested = true
 			detectTempSensors.running = true
+			detectGpuUsageSource.running = true
 			findCpuMaxFreqProc.running = true
 		}
 		autoStopTimer.restart()
@@ -117,6 +182,9 @@ Singleton {
 	        fileStat.reload()
 	        fileCpuTemp.reload()
 	        fileGpuTemp.reload()
+            if (root._gpuUsageSource === "sysfs") {
+                fileGpuUsage.reload()
+            }
 
 	        // Parse memory and swap usage
 	        const textMeminfo = fileMeminfo.text()
@@ -149,6 +217,20 @@ Singleton {
 	        cpuTemp = Math.round(cpuTempRaw / 1000)
 	        gpuTemp = Math.round(gpuTempRaw / 1000)
 
+            // Parse GPU usage (native sysfs)
+            if (root._gpuUsageSource === "sysfs") {
+                const gpuBusyPercent = parseInt(fileGpuUsage.text())
+                if (isNaN(gpuBusyPercent)) {
+                    gpuUsage = 0
+                } else {
+                    gpuUsage = root.clampPercentToUnit(gpuBusyPercent / 100)
+                }
+            } else if (root._gpuUsageSource === "nvidia-smi" && !nvidiaGpuUsageProc.running) {
+                nvidiaGpuUsageProc.running = true
+            } else if (root._gpuUsageSource === "none") {
+                gpuUsage = 0
+            }
+
             root.updateHistories()
             
             // Update disk usage
@@ -162,10 +244,13 @@ Singleton {
     // These paths are auto-detected at startup
     FileView { id: fileCpuTemp; path: root._cpuTempPath }
     FileView { id: fileGpuTemp; path: root._gpuTempPath }
+    FileView { id: fileGpuUsage; path: root._gpuUsagePath }
 
     // Auto-detect temperature sensor paths
     property string _cpuTempPath: ""
     property string _gpuTempPath: ""
+    property string _gpuUsagePath: ""
+    property string _gpuUsageSource: "none"
 
     Component.onCompleted: {
         // Lazy: only start monitoring when a panel/widget requests it.
