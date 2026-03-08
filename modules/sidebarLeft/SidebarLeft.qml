@@ -11,6 +11,22 @@ import Quickshell.Hyprland
 Scope {
     id: root
     property int sidebarWidth: Appearance.sizes.sidebarWidth
+    // Expanded width when a webapp is active
+    property bool pluginViewActive: false
+    // Track transitions to disable width animation during webapp open/close
+    property bool _pluginTransitioning: false
+    onPluginViewActiveChanged: {
+        root._pluginTransitioning = true
+        _pluginTransitionTimer.restart()
+    }
+    Timer {
+        id: _pluginTransitionTimer
+        interval: 50
+        onTriggered: root._pluginTransitioning = false
+    }
+    readonly property real effectiveSidebarWidth: pluginViewActive
+        ? Appearance.sizes.sidebarWidthExtended
+        : sidebarWidth
 
     PanelWindow {
         id: sidebarRoot
@@ -64,7 +80,15 @@ Scope {
                 margins: Appearance.sizes.hyprlandGapsOut
                 rightMargin: Appearance.sizes.elevationMargin
             }
-            width: sidebarWidth - Appearance.sizes.hyprlandGapsOut - Appearance.sizes.elevationMargin
+            width: root.effectiveSidebarWidth - Appearance.sizes.hyprlandGapsOut - Appearance.sizes.elevationMargin
+            Behavior on width {
+                // Disable animation when webapp toggles — avoids choppy WebEngine re-layout
+                enabled: Appearance.animationsEnabled && !root._pluginTransitioning
+                NumberAnimation {
+                    duration: Appearance.calcEffectiveDuration(250)
+                    easing.type: Easing.OutCubic
+                }
+            }
             height: parent.height - Appearance.sizes.hyprlandGapsOut * 2
 
             // Simple slide animation using transform (GPU-accelerated)
@@ -97,6 +121,7 @@ Scope {
                 screenWidth: sidebarRoot.screen?.width ?? 1920
                 screenHeight: sidebarRoot.screen?.height ?? 1080
                 panelScreen: sidebarRoot.screen ?? null
+                onPluginViewActiveChanged: root.pluginViewActive = pluginViewActive
             }
         }
     }

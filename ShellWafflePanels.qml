@@ -58,6 +58,7 @@ Item {
     PanelLoader { identifier: "iiScreenCorners"; component: ScreenCorners {} }
     PanelLoader { identifier: "iiSessionScreen"; component: SessionScreen {} }
     PanelLoader { identifier: "iiWallpaperSelector"; component: WallpaperSelector {} }
+    PanelLoader { identifier: "iiCoverflowSelector"; component: WallpaperCoverflow {} }
     PanelLoader { identifier: "iiClipboard"; component: ClipboardModule.ClipboardPanel {} }
 
     // Waffle Clipboard - handles IPC when panelFamily === "waffle"

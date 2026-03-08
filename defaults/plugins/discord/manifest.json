@@ -1,0 +1,8 @@
+{
+  "id": "discord",
+  "name": "Discord",
+  "url": "https://discord.com/app",
+  "icon": "chat",
+  "version": "1.0",
+  "display": "tab"
+}

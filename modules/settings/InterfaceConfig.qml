@@ -1615,6 +1615,16 @@ ContentPage {
                         text: Translation.tr("Search and play music from YouTube using yt-dlp")
                     }
                 }
+
+                SettingsSwitch {
+                    buttonIcon: "extension"
+                    text: Translation.tr("Web Apps")
+                    checked: Config.options?.sidebar?.plugins?.enable ?? false
+                    onCheckedChanged: Config.setNestedValue("sidebar.plugins.enable", checked)
+                    StyledToolTip {
+                        text: Translation.tr("Embed web apps like Discord, YouTube Music and more in the sidebar (requires quickshell-webengine)")
+                    }
+                }
             }
 
             ContentSubsection {

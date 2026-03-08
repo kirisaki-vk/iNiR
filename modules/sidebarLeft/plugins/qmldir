@@ -1,0 +1,4 @@
+module qs.modules.sidebarLeft.plugins
+
+WebAppView 1.0 WebAppView.qml
+PluginsTab 1.0 PluginsTab.qml
