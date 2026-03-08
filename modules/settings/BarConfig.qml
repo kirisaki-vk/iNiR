@@ -340,13 +340,32 @@ ContentPage {
                     text: Translation.tr("Active window title")
                     checked: Config.options?.bar?.modules?.activeWindow ?? true
                     onCheckedChanged: Config.setNestedValue("bar.modules.activeWindow", checked)
+                    enabled: !(Config.options?.bar?.modules?.taskbar ?? false)
+                    opacity: enabled ? 1 : 0.5
                 }
+                SettingsSwitch {
+                    buttonIcon: "dock_to_bottom"
+                    text: Translation.tr("Taskbar (apps in bar)")
+                    checked: Config.options?.bar?.modules?.taskbar ?? false
+                    onCheckedChanged: Config.setNestedValue("bar.modules.taskbar", checked)
+                }
+            }
+
+            ConflictNote {
+                visible: (Config.options?.bar?.modules?.taskbar ?? false)
+                icon: "info"
+                text: Translation.tr("Taskbar replaces the active window title. Pinned apps and running windows appear in the bar, like a traditional taskbar. Uses the same pinned apps as the dock.")
+            }
+
+            ConfigRow {
+                uniform: true
                 SettingsSwitch {
                     buttonIcon: "shelf_auto_hide"
                     text: Translation.tr("System tray")
                     checked: Config.options?.bar?.modules?.sysTray ?? true
                     onCheckedChanged: Config.setNestedValue("bar.modules.sysTray", checked)
                 }
+                Item { Layout.fillWidth: true }
             }
 
             ConfigRow {

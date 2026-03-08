@@ -593,6 +593,7 @@ Singleton {
                     property bool rightSidebarButton: true
                     property bool sysTray: true
                     property bool weather: true
+                    property bool taskbar: false
                 }
                 property JsonObject modulesPlacement: JsonObject {
                     property string resources: "start"

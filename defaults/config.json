@@ -315,6 +315,7 @@
             "resources": true,
             "rightSidebarButton": true,
             "sysTray": true,
+            "taskbar": false,
             "utilButtons": true,
             "weather": true,
             "workspaces": true

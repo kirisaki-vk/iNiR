@@ -62,6 +62,8 @@ Item { // Bar content region
             },
         ]
     }
+    readonly property bool taskbarEnabled: Config.options?.bar?.modules?.taskbar ?? false
+
     property real useShortenedForm: (Appearance.sizes.barHellaShortenScreenWidthThreshold >= screen?.width) ? 2 : (Appearance.sizes.barShortenScreenWidthThreshold >= screen?.width) ? 1 : 0
     readonly property int baseCenterSideModuleWidth: (useShortenedForm == 2) ? Appearance.sizes.barCenterSideModuleWidthHellaShortened : (useShortenedForm == 1) ? Appearance.sizes.barCenterSideModuleWidthShortened : Appearance.sizes.barCenterSideModuleWidth
     // Both center groups share the same width so workspaces stay perfectly centered
@@ -316,9 +318,19 @@ Item { // Bar content region
             }
 
             ActiveWindow {
-                visible: (Config.options?.bar?.modules?.activeWindow ?? true) && root.useShortenedForm === 0
+                visible: (Config.options?.bar?.modules?.activeWindow ?? true) && root.useShortenedForm === 0 && !root.taskbarEnabled
+                Layout.fillWidth: !root.taskbarEnabled
+                Layout.fillHeight: true
+            }
+
+            Loader {
+                active: root.taskbarEnabled
+                visible: active
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                sourceComponent: BarTaskbar {
+                    parentWindow: root.QsWindow.window
+                }
             }
         }
     }

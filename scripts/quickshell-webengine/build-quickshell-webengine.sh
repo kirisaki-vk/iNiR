@@ -124,6 +124,6 @@ fi
 
 echo ""
 echo "═══════════════════════════════════════════════════"
-echo "  Make sure your shell.qml has this on line 2:"
-echo "  //@ pragma EnableQtWebEngineQuick"
+echo "  Done! Enable Web Apps in:"
+echo "  Settings → Interface → Sidebars → Web Apps"
 echo "═══════════════════════════════════════════════════"
