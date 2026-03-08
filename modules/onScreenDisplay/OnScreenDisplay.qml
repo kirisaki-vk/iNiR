@@ -15,8 +15,8 @@ Scope {
     property string protectionMessage: ""
     property bool initialized: false
     property var focusedScreen: CompositorService.isNiri
-        ? Quickshell.screens.find(s => s.name === NiriService.currentOutput) ?? Quickshell.screens[0]
-        : Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0]
+        ? Quickshell.screens.find(s => s.name === NiriService.currentOutput) ?? GlobalStates.primaryScreen
+        : Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? GlobalStates.primaryScreen
 
     property string currentIndicator: "volume"
     property var indicators: [

@@ -22,7 +22,7 @@ Scope {
     property int currentStep: 0
     readonly property int totalSteps: 5
     property bool wizardVisible: true
-    property var focusedScreen: Quickshell.screens[0]
+    property var focusedScreen: GlobalStates.primaryScreen
 
     readonly property var steps: [
         { icon: "waving_hand", title: Translation.tr("Welcome") },

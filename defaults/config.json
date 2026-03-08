@@ -427,6 +427,9 @@
     "crosshair": {
         "code": "0;P;d;1;0l;10;0o;2;1b;0"
     },
+    "display": {
+        "primaryMonitor": ""
+    },
     "dock": {
         "enable": true,
         "enableBlurGlass": false,

@@ -15,8 +15,8 @@ Scope {
 
     // Canonical focused screen detection (same pattern as OSD, notifications, brightness)
     readonly property var focusedScreen: CompositorService.isNiri
-        ? (Quickshell.screens.find(s => s.name === NiriService.currentOutput) ?? Quickshell.screens[0])
-        : (Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0])
+        ? (Quickshell.screens.find(s => s.name === NiriService.currentOutput) ?? GlobalStates.primaryScreen)
+        : (Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? GlobalStates.primaryScreen)
     readonly property string focusedMonitorName: focusedScreen?.name ?? ""
 
     property bool _pendingCoverflow: false
@@ -220,6 +220,15 @@ Scope {
 
         function toggle(): void {
             root.toggleWallpaperSelector();
+        }
+
+        function open(): void {
+            if (!GlobalStates.wallpaperSelectorOpen)
+                root.toggleWallpaperSelector();
+        }
+
+        function close(): void {
+            GlobalStates.wallpaperSelectorOpen = false;
         }
 
         function toggleOnMonitor(monitorName: string): void {

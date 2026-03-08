@@ -703,6 +703,10 @@ Singleton {
                 property string code: "0;P;d;1;0l;10;0o;2;1b;0"
             }
 
+            property JsonObject display: JsonObject {
+                property string primaryMonitor: ""
+            }
+
             property JsonObject dock: JsonObject {
                 property string style: "panel" // "panel" | "pill"
                 property bool cardStyle: false

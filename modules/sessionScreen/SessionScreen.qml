@@ -27,7 +27,7 @@ Scope {
             if (matchHypr)
                 return matchHypr;
         }
-        return Quickshell.screens[0];
+        return GlobalStates.primaryScreen;
     }
     readonly property bool packageManagerRunning: SessionWarnings.packageManagerRunning
     readonly property bool downloadRunning: SessionWarnings.downloadRunning

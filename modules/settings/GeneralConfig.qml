@@ -124,6 +124,33 @@ ContentPage {
                 }
             }
 
+            ContentSubsection {
+                title: Translation.tr("Primary monitor")
+                tooltip: Translation.tr("Choose which monitor is used as the default for popups like wallpaper selector, OSD, and notifications when the focused screen can't be detected.")
+
+                ConfigSelectionArray {
+                    currentValue: Config.options?.display?.primaryMonitor ?? ""
+                    onSelected: newValue => {
+                        Config.setNestedValue("display.primaryMonitor", newValue)
+                    }
+                    options: {
+                        let opts = [{ displayName: Translation.tr("Auto (first available)"), icon: "auto_mode", value: "" }]
+                        const screens = Quickshell.screens
+                        for (let i = 0; i < screens.length; i++) {
+                            const name = screens[i].name ?? ""
+                            if (name.length > 0) {
+                                opts.push({
+                                    displayName: name,
+                                    icon: "monitor",
+                                    value: name
+                                })
+                            }
+                        }
+                        return opts
+                    }
+                }
+            }
+
             SettingsDivider {}
 
             ContentSubsection {
