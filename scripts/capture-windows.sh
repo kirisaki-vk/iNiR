@@ -117,7 +117,7 @@ for pid in "${pids[@]}"; do
   wait "$pid" || true
 done
 
-sleep 0.2
+sleep 0.15
 
 max_cleanup=100
 cleanup_count=0

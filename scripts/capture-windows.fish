@@ -124,8 +124,8 @@ end
 wait
 
 # Cleanup ALL new clipboard entries from screenshots
-# Use longer delay to ensure cliphist has registered all screenshot entries
-sleep 0.5
+# Short delay — QML side does a second clipboard restore 1.5s after script exits
+sleep 0.2
 
 set -l max_cleanup 100
 set -l cleanup_count 0
@@ -146,7 +146,7 @@ while test $cleanup_count -lt $max_cleanup
 end
 
 # Second cleanup pass — catch any entries that arrived after first pass
-sleep 0.3
+sleep 0.15
 set -l cleanup_count2 0
 while test $cleanup_count2 -lt 50
     set -l entry ($cliphist_bin list 2>/dev/null | $head_bin -1)
