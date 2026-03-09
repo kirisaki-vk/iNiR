@@ -79,6 +79,8 @@ Rectangle {
         source: root.wallpaperUrl
         fillMode: Image.PreserveAspectCrop
         cache: true
+        sourceSize.width: macBlurWall.scrW
+        sourceSize.height: macBlurWall.scrH
         asynchronous: true
 
         readonly property real scrW: root.dockScreen?.width  ?? 1920
