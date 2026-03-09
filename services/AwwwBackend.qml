@@ -212,6 +212,11 @@ Singleton {
         if (signature === lastSyncSignature && !lastError)
             return
 
+        // If applyProc is already running with this exact signature, don't
+        // kill the in-progress transition just to restart the same one.
+        if (applyProc.running && applyProc._pendingSignature === signature)
+            return
+
         const transitionName = _mappedTransitionType()
         const resizeMode = resizeModeForFillMode(fillMode)
         const fps = Math.max(1, transitionFps)

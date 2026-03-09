@@ -116,6 +116,8 @@ Singleton {
 
     function _tryLiveRegenerateFromConfig(): void {
         if (!Config.ready || !isAutoTheme) return
+        // Skip if a direct Wallpapers.apply() already launched switchwall.sh
+        if (Wallpapers._applyInProgress) return
         if (root.liveRegenSignature === root._lastLiveRegenSignature) return
         root._lastLiveRegenSignature = root.liveRegenSignature
         root.regenerateAutoTheme()

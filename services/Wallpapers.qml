@@ -16,6 +16,10 @@ Singleton {
     id: root
 
     readonly property bool _debugWallpaperUrls: (Quickshell.env("INIR_DEBUG_WALLPAPER_URLS") ?? "") === "1"
+
+    // Suppression flag: prevents ThemeService from firing a duplicate
+    // switchwall.sh run while a direct apply() is already in progress.
+    property bool _applyInProgress: false
     readonly property string backendProvider: Config.options?.background?.backend?.provider ?? "internal"
     readonly property bool awwwBackendEnabled: backendProvider === "awww"
 
@@ -96,6 +100,16 @@ Singleton {
             console.log("[Wallpapers] effectiveWallpaperPath=", root.effectiveWallpaperPath)
             console.log("[Wallpapers] effectiveWallpaperUrl=", root.effectiveWallpaperUrl)
         }
+        // Schedule a deferred GC pass to reclaim orphaned pixmaps/textures
+        // from the previous wallpaper.  The delay gives the scene graph one
+        // frame to drop references before we collect.
+        _gcTimer.restart()
+    }
+
+    Timer {
+        id: _gcTimer
+        interval: 2000
+        onTriggered: gc()
     }
 
     // ── Video first-frame system ──────────────────────────────────────────
@@ -298,7 +312,15 @@ Singleton {
     }
 
     Process { id: applyProc }
-    
+
+    // Clears _applyInProgress after switchwall.sh has had time to start.
+    // 3 seconds is enough for the script to begin; ThemeService debounce is 260ms.
+    Timer {
+        id: _applySuppressTimer
+        interval: 3000
+        onTriggered: root._applyInProgress = false
+    }
+
     function openFallbackPicker(darkMode = Appearance.m3colors.darkmode) {
         applyProc.exec([Directories.wallpaperSwitchScriptPath, "--mode", (darkMode ? "dark" : "light")])
     }
@@ -316,6 +338,10 @@ Singleton {
         }
 
         if (applyProc.running) applyProc.running = false
+
+        // Suppress ThemeService duplicate regeneration while switchwall.sh runs
+        root._applyInProgress = true
+        _applySuppressTimer.restart()
 
         if (root.awwwBackendEnabled && AwwwBackend.supportsMainWallpaper(normalizedPath)) {
             Config.setNestedValue("background.wallpaperPath", normalizedPath)
