@@ -239,7 +239,6 @@ patch_existing_user_css() {
 
   sed -i 's/rgba(var(--spice-rgb-selected-row),.7)/var(--spice-subtext)/g' "$css_file"
 }
-
 download_sleek_css() {
   local css_file="$1"
   if [[ ! -f "$css_file" ]]; then
@@ -264,10 +263,10 @@ configure_spicetify() {
   local user_css="$theme_dir/user.css"
 
   mkdir -p "$theme_dir" 2>/dev/null || return 1
-
+  
   # Read the palette first so COLORS array is populated for both steps
   read_colors || return 1
-
+  
   download_sleek_css "$user_css"
   patch_existing_user_css "$user_css"
   # Write user.css bridge FIRST so that when color.ini lands (last) and
