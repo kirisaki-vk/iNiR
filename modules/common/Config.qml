@@ -695,6 +695,7 @@ Singleton {
                     property int showNumberDelay: 300 // milliseconds
                     property list<string> numberMap: ["1", "2"] // Characters to show instead of numbers on workspace indicator
                     property bool useNerdFont: false
+                    property bool perMonitor: true // Each bar shows workspaces for its own monitor (Niri)
                 }
                 property JsonObject weather: JsonObject {
                     property bool enable: false
@@ -1457,6 +1458,14 @@ Singleton {
                     property bool showQuickActions: true
                     property list<string> quickActions: ["files", "terminal", "settings", "wallpaper", "screenshot", "screenRecord", "session"]
                     property bool weatherHideLocation: false // Privacy: hide city name
+                    // Individual quick action toggles (used by settings switches)
+                    property bool showFiles: true
+                    property bool showTerminal: true
+                    property bool showSettings: true
+                    property bool showWallpaper: true
+                    property bool showScreenshot: true
+                    property bool showScreenRecord: true
+                    property bool showSession: true
                 }
                 property JsonObject workspaceNames: JsonObject {
                     // Custom workspace names, keyed by workspace index (1-based)
