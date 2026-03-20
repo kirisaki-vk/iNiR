@@ -1771,7 +1771,7 @@ ContentPage {
     SettingsCardSection {
         visible: root.isIiActive
         expanded: false
-        icon: "pulse"
+        icon: "schedule"
         title: Translation.tr("Widget: Clock")
 
         SettingsGroup {
@@ -1829,7 +1829,7 @@ ContentPage {
                     options: [
                         {
                             displayName: Translation.tr("Digital"),
-                            icon: "pulse",
+                            icon: "timer",
                             value: "digital"
                         },
                         {
@@ -1952,7 +1952,7 @@ ContentPage {
 
                     SettingsSwitch {
                         enabled: Config.options.background.widgets.clock.style === "cookie" && Config.options.background.widgets.clock.cookie.dialNumberStyle !== "numbers"
-                        buttonIcon: "pulse"
+                        buttonIcon: "123"
                         text: Translation.tr("Digits in the middle")
                         checked: Config.options.background.widgets.clock.cookie.timeIndicators
                         onEnabledChanged: {
