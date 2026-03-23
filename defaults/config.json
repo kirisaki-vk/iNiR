@@ -182,7 +182,10 @@
                 "wdth": 105,
                 "grad": 175
             }
-        }
+        },
+        "shellScale": 1.0,
+        "iconTheme": "",
+        "dockIconTheme": ""
     },
     "apps": {
         "bluetooth": "blueman-manager",
@@ -490,7 +493,11 @@
         "full": 101,
         "low": 20,
         "notifyFull": true,
-        "suspend": 3
+        "suspend": 3,
+        "chargeLimit": {
+            "enable": false,
+            "threshold": 80
+        }
     },
     "closeConfirm": {
         "enabled": false

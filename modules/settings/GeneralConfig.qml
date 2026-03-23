@@ -332,6 +332,52 @@ ContentPage {
                     }
                 }
             }
+
+            SettingsDivider {}
+
+            ConfigRow {
+                enabled: Battery.chargeLimitSupported
+                uniform: false
+                Layout.fillWidth: false
+                SettingsSwitch {
+                    buttonIcon: "battery_saver"
+                    text: Translation.tr("Charge limit")
+                    checked: Config.options?.battery?.chargeLimit?.enable ?? false
+                    onCheckedChanged: {
+                        Config.setNestedValue("battery.chargeLimit.enable", checked);
+                    }
+                    StyledToolTip {
+                        text: Battery.chargeLimitSupported
+                            ? Translation.tr("Stop charging at a specific percentage to extend battery lifespan (requires polkit)")
+                            : Translation.tr("Not supported on this device")
+                    }
+                }
+                ConfigSpinBox {
+                    enabled: (Config.options?.battery?.chargeLimit?.enable ?? false) && Battery.chargeLimitSupported
+                    icon: "speed"
+                    text: Translation.tr("at")
+                    value: Config.options?.battery?.chargeLimit?.threshold ?? 80
+                    from: 20
+                    to: 100
+                    stepSize: 5
+                    onValueChanged: {
+                        Config.setNestedValue("battery.chargeLimit.threshold", value);
+                    }
+                    StyledToolTip {
+                        text: Translation.tr("Maximum charge percentage")
+                    }
+                }
+            }
+
+            StyledText {
+                visible: Battery.chargeLimitSupported && Battery.currentChargeLimit > 0
+                Layout.leftMargin: 16
+                text: Battery.currentChargeLimit < 100
+                    ? Translation.tr("Current limit: %1%").arg(Battery.currentChargeLimit)
+                    : Translation.tr("No charge limit active")
+                font.pixelSize: Appearance.font.pixelSize.smaller
+                color: Appearance.colors.colSubtext
+            }
         }
     }
     

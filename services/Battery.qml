@@ -31,6 +31,146 @@ Singleton {
     property real timeToEmpty: UPower.displayDevice.timeToEmpty
     property real timeToFull: UPower.displayDevice.timeToFull
 
+    // ─── Charge limit ───
+    readonly property bool chargeLimitEnabled: Config.options?.battery?.chargeLimit?.enable ?? false
+    readonly property int chargeLimitThreshold: Config.options?.battery?.chargeLimit?.threshold ?? 80
+    property string _chargeLimitSysfsPath: ""
+    property int _currentChargeLimit: -1
+    readonly property bool chargeLimitSupported: _chargeLimitSysfsPath.length > 0
+    readonly property int currentChargeLimit: _currentChargeLimit
+
+    Component.onCompleted: {
+        if (root.available) {
+            _detectChargeLimitPath()
+        }
+    }
+
+    onAvailableChanged: {
+        if (available && _chargeLimitSysfsPath.length === 0) {
+            _detectChargeLimitPath()
+        }
+    }
+
+    function _detectChargeLimitPath(): void {
+        if (!chargeLimitDetector.running) {
+            chargeLimitDetector.running = true
+        }
+    }
+
+    Process {
+        id: chargeLimitDetector
+        command: ["/bin/sh", "-c",
+            "for p in /sys/class/power_supply/BAT*/charge_control_end_threshold " +
+            "/sys/class/power_supply/BAT*/charge_stop_threshold; do " +
+            "[ -f \"$p\" ] && echo \"$p\" && exit 0; done; echo ''"
+        ]
+        stdout: SplitParser {
+            onRead: data => {
+                const path = data.trim()
+                if (path.length > 0) {
+                    root._chargeLimitSysfsPath = path
+                    console.log("[Battery] Charge limit sysfs: " + path)
+                    root._readChargeLimit()
+                    if (root.chargeLimitEnabled) {
+                        chargeLimitApplyDelay.restart()
+                    }
+                }
+            }
+        }
+    }
+
+    // Small delay before applying on startup so the shell is settled
+    Timer {
+        id: chargeLimitApplyDelay
+        interval: 2000
+        repeat: false
+        onTriggered: root._applyChargeLimit()
+    }
+
+    function _readChargeLimit(): void {
+        if (_chargeLimitSysfsPath.length === 0 || chargeLimitReader.running) return
+        chargeLimitReader.command = ["/bin/cat", _chargeLimitSysfsPath]
+        chargeLimitReader.running = true
+    }
+
+    Process {
+        id: chargeLimitReader
+        stdout: SplitParser {
+            onRead: data => {
+                const val = parseInt(data.trim())
+                if (!isNaN(val)) {
+                    root._currentChargeLimit = val
+                }
+            }
+        }
+    }
+
+    // Periodically re-read the threshold so the UI stays in sync
+    Timer {
+        id: chargeLimitPoll
+        interval: 30000
+        repeat: true
+        running: root.chargeLimitSupported
+        onTriggered: root._readChargeLimit()
+    }
+
+    function _applyChargeLimit(): void {
+        if (!chargeLimitSupported || chargeLimitWriter.running) return
+        chargeLimitWriter.command = [
+            "/usr/bin/pkexec", "/bin/sh", "-c",
+            "printf '%d' " + chargeLimitThreshold + " > " + _chargeLimitSysfsPath
+        ]
+        chargeLimitWriter.running = true
+    }
+
+    function _resetChargeLimit(): void {
+        if (!chargeLimitSupported || chargeLimitResetter.running) return
+        chargeLimitResetter.command = [
+            "/usr/bin/pkexec", "/bin/sh", "-c",
+            "printf '100' > " + _chargeLimitSysfsPath
+        ]
+        chargeLimitResetter.running = true
+    }
+
+    Process {
+        id: chargeLimitWriter
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0) {
+                root._currentChargeLimit = root.chargeLimitThreshold
+                console.log("[Battery] Charge limit set to " + root.chargeLimitThreshold + "%")
+            } else {
+                console.warn("[Battery] Failed to set charge limit (exit code " + exitCode + ")")
+            }
+        }
+    }
+
+    Process {
+        id: chargeLimitResetter
+        onExited: (exitCode, exitStatus) => {
+            if (exitCode === 0) {
+                root._currentChargeLimit = 100
+                console.log("[Battery] Charge limit removed (set to 100%)")
+            } else {
+                console.warn("[Battery] Failed to reset charge limit (exit code " + exitCode + ")")
+            }
+        }
+    }
+
+    onChargeLimitEnabledChanged: {
+        if (!chargeLimitSupported) return
+        if (chargeLimitEnabled) {
+            _applyChargeLimit()
+        } else {
+            _resetChargeLimit()
+        }
+    }
+
+    onChargeLimitThresholdChanged: {
+        if (!chargeLimitSupported || !chargeLimitEnabled) return
+        _applyChargeLimit()
+    }
+
+    // ─── Battery warnings ───
     onIsLowAndNotChargingChanged: {
         if (!root.available || !isLowAndNotCharging) return;
         Quickshell.execDetached([

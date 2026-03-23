@@ -360,6 +360,7 @@ Singleton {
                 }
                 property string iconTheme: "" // System icon theme (tray, GTK/Qt apps)
                 property string dockIconTheme: "" // Dock icon theme (overrides system for dock only)
+                property real shellScale: 1.0 // Global shell scale factor (QT_SCALE_FACTOR). Requires restart.
             }
 
             property JsonObject performance: JsonObject {
@@ -725,6 +726,10 @@ Singleton {
                 property bool automaticSuspend: true
                 property int suspend: 3
                 property bool notifyFull: true
+                property JsonObject chargeLimit: JsonObject {
+                    property bool enable: false
+                    property int threshold: 80
+                }
             }
 
             property JsonObject closeConfirm: JsonObject {
