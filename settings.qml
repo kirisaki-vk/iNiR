@@ -29,7 +29,7 @@ ApplicationWindow {
             component: "modules/settings/QuickConfig.qml"
         },
         {
-            name: Translation.tr("General"),
+            name: Translation.tr("System"),
             icon: "browse",
             component: "modules/settings/GeneralConfig.qml"
         },
@@ -50,9 +50,14 @@ ApplicationWindow {
             component: "modules/settings/ThemesConfig.qml"
         },
         {
-            name: Translation.tr("Interface"),
+            name: Translation.tr("Panels"),
             icon: "bottom_app_bar",
             component: "modules/settings/InterfaceConfig.qml"
+        },
+        {
+            name: Translation.tr("Tools"),
+            icon: "build",
+            component: "modules/settings/ToolsConfig.qml"
         },
         {
             name: Translation.tr("Services"),
@@ -78,6 +83,11 @@ ApplicationWindow {
             name: Translation.tr("Waffle Style"),
             icon: "window",
             component: "modules/settings/WaffleConfig.qml"
+        },
+        {
+            name: Translation.tr("Compositor"),
+            icon: "desktop_windows",
+            component: "modules/settings/NiriConfig.qml"
         },
         {
             name: Translation.tr("About"),
@@ -1823,6 +1833,7 @@ ApplicationWindow {
                 Flickable {
                     id: navRailFlickable
                     anchors.fill: parent
+                    anchors.bottomMargin: overlayToggleBtn.height + 4
                     contentWidth: navRail.width
                     contentHeight: navRail.implicitHeight
                     clip: true
@@ -1884,6 +1895,62 @@ ApplicationWindow {
                                 }
                             }
                         }
+                    }
+                }
+
+                // Overlay mode toggle at bottom of nav rail
+                RippleButton {
+                    id: overlayToggleBtn
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 36
+                    buttonRadius: Appearance.rounding.small
+                    colBackground: "transparent"
+                    colBackgroundHover: Appearance.colors.colLayer1Hover
+
+                    onClicked: {
+                        Config.setNestedValue("settingsUi.overlayMode", true)
+                        settingsRestartTimer.restart()
+                    }
+
+                    contentItem: RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: navRail.expanded ? 10 : 0
+                        anchors.rightMargin: navRail.expanded ? 8 : 0
+                        spacing: navRail.expanded ? 8 : 0
+
+                        MaterialSymbol {
+                            Layout.alignment: navRail.expanded ? Qt.AlignVCenter : Qt.AlignCenter
+                            text: "layers"
+                            iconSize: 18
+                            color: Appearance.colors.colOnSurfaceVariant
+                        }
+
+                        StyledText {
+                            Layout.fillWidth: true
+                            visible: navRail.expanded
+                            text: Translation.tr("Overlay")
+                            font {
+                                family: Appearance.font.family.main
+                                pixelSize: Appearance.font.pixelSize.smaller
+                            }
+                            color: Appearance.colors.colOnSurfaceVariant
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    StyledToolTip {
+                        text: Translation.tr("Switch to overlay mode (live preview)")
+                    }
+                }
+
+                Timer {
+                    id: settingsRestartTimer
+                    interval: 500
+                    onTriggered: {
+                        Quickshell.execDetached([Quickshell.shellPath("scripts/inir"), "settings"])
+                        Qt.quit()
                     }
                 }
             }

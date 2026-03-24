@@ -64,6 +64,7 @@ Scope {
         { pageIndex: 1, pageName: overlayPages[1].name, section: Translation.tr("Time"), label: Translation.tr("Clock format"), description: Translation.tr("Time display format (e.g., hh:mm or h:mm AP)"), keywords: ["time", "clock", "format", "24h", "12h", "am", "pm", "hour", "minute"] },
         { pageIndex: 1, pageName: overlayPages[1].name, section: Translation.tr("Time"), label: Translation.tr("Show seconds"), description: Translation.tr("Update clock every second"), keywords: ["time", "seconds", "precision", "clock", "update"] },
         { pageIndex: 1, pageName: overlayPages[1].name, section: Translation.tr("Work Safety"), label: Translation.tr("Work Safety"), description: Translation.tr("Hide sensitive content on public networks"), keywords: ["work", "safety", "nsfw", "public", "network", "hide", "clipboard", "wallpaper"] },
+        { pageIndex: 1, pageName: overlayPages[1].name, section: Translation.tr("Lock screen"), label: Translation.tr("Lock screen"), description: Translation.tr("Lock screen behaviour and style"), keywords: ["lock", "screen", "hyprlock", "blur", "password", "security"] },
         // Bar (page 2)
         { pageIndex: 2, pageName: overlayPages[2].name, section: Translation.tr("Positioning"), label: Translation.tr("Bar position"), description: Translation.tr("Bar position, auto hide and style"), keywords: ["bar", "position", "auto", "hide", "corner", "style", "top", "bottom", "float", "vertical"] },
         { pageIndex: 2, pageName: overlayPages[2].name, section: Translation.tr("Positioning"), label: Translation.tr("Auto hide"), description: Translation.tr("Automatically hide the bar"), keywords: ["bar", "auto", "hide", "show", "hover", "reveal"] },
@@ -113,11 +114,7 @@ Scope {
         { pageIndex: 4, pageName: overlayPages[4].name, section: Translation.tr("Transparency"), label: Translation.tr("Transparency"), description: Translation.tr("Panel and content transparency"), keywords: ["transparency", "opacity", "translucent", "see-through", "glass"] },
         { pageIndex: 4, pageName: overlayPages[4].name, section: Translation.tr("Screen Rounding"), label: Translation.tr("Fake screen rounding"), description: Translation.tr("Rounded corners for the screen edges"), keywords: ["screen", "rounding", "corners", "fake", "round", "edges"] },
         { pageIndex: 4, pageName: overlayPages[4].name, section: Translation.tr("Theme Schedule"), label: Translation.tr("Theme schedule"), description: Translation.tr("Automatically switch themes at day/night times"), keywords: ["theme", "schedule", "day", "night", "auto", "switch", "time"] },
-        // Interface (page 5)
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Display scaling"), label: Translation.tr("Shell scale"), description: Translation.tr("Scale the entire shell UI for HiDPI / 4K monitors"), keywords: ["scale", "dpi", "hidpi", "4k", "zoom", "size", "display", "monitor", "resolution"] },
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Crosshair overlay"), label: Translation.tr("Crosshair overlay"), description: Translation.tr("In-game crosshair overlay"), keywords: ["crosshair", "overlay", "aim", "game", "fps"] },
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Overlay"), label: Translation.tr("Overlay"), description: Translation.tr("Fullscreen overlay effects and animations"), keywords: ["overlay", "darken", "scrim", "zoom", "animation", "opacity"] },
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Overlay"), label: Translation.tr("Overlay opacity"), description: Translation.tr("Background opacity of overlay panels"), keywords: ["overlay", "opacity", "background", "transparent", "panel"] },
+        // Panels (page 5) — dock, sidebars, overview, alt-tab, notifications, widgets
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Alt+Tab Switcher"), label: Translation.tr("Alt+Tab Switcher"), description: Translation.tr("Window switcher preset and behavior"), keywords: ["alt", "tab", "switcher", "window", "preset", "default", "list", "compact"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Dock"), label: Translation.tr("Dock"), description: Translation.tr("Dock position and behaviour"), keywords: ["dock", "position", "pinned", "hover", "reveal", "desktop", "show"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Dock"), label: Translation.tr("Dock enable"), description: Translation.tr("Enable or disable the dock"), keywords: ["dock", "enable", "disable", "show", "hide"] },
@@ -127,43 +124,57 @@ Scope {
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Dock"), label: Translation.tr("Window preview"), description: Translation.tr("Show window preview on hover"), keywords: ["dock", "preview", "hover", "window", "thumbnail"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Dock"), label: Translation.tr("Dock icon size"), description: Translation.tr("Size of dock icons"), keywords: ["dock", "icon", "size", "height"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Dock"), label: Translation.tr("Monochrome dock icons"), description: Translation.tr("Tint dock icons to match theme"), keywords: ["dock", "monochrome", "icons", "tint", "theme"] },
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Lock screen"), label: Translation.tr("Lock screen"), description: Translation.tr("Lock screen behaviour and style"), keywords: ["lock", "screen", "hyprlock", "blur", "password", "security"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Notifications"), label: Translation.tr("Notifications"), description: Translation.tr("Notification timeouts and popup position"), keywords: ["notifications", "timeout", "popup", "position"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Notifications"), label: Translation.tr("Notification timeout"), description: Translation.tr("Duration before notification auto-closes"), keywords: ["notification", "timeout", "duration", "auto", "close", "dismiss"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Notifications"), label: Translation.tr("Notification position"), description: Translation.tr("Where popup notifications appear on screen"), keywords: ["notification", "position", "popup", "corner", "top", "bottom", "left", "right"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Notifications"), label: Translation.tr("Do Not Disturb"), description: Translation.tr("Silence all notifications"), keywords: ["notification", "dnd", "silent", "mute", "disturb", "quiet", "do not"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Sidebars"), label: Translation.tr("Sidebars"), description: Translation.tr("Sidebar toggles, sliders and corner open"), keywords: ["sidebar", "quick", "toggles", "sliders", "corner"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Sidebars"), label: Translation.tr("Corner open"), description: Translation.tr("Open sidebar by hovering screen corners"), keywords: ["sidebar", "corner", "open", "hover", "edge", "clickless"] },
+        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Widgets"), label: Translation.tr("Widgets"), description: Translation.tr("Background widgets configuration and positions"), keywords: ["widgets", "background", "overlay", "media", "clock", "weather"] },
         { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Overview"), label: Translation.tr("Overview"), description: Translation.tr("Overview scale, rows and columns"), keywords: ["overview", "grid", "rows", "columns", "scale"] },
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Settings UI"), label: Translation.tr("Overlay mode"), description: Translation.tr("Open Settings as floating overlay inside shell for live preview"), keywords: ["settings", "overlay", "mode", "live", "preview", "floating", "window", "layer"] },
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Settings UI"), label: Translation.tr("Overlay background dim"), description: Translation.tr("Dim amount behind the Settings overlay panel"), keywords: ["settings", "overlay", "dim", "scrim", "background", "dark"] },
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Settings UI"), label: Translation.tr("Overlay panel opacity"), description: Translation.tr("Background opacity of the Settings overlay panel"), keywords: ["settings", "overlay", "opacity", "transparent", "panel", "background"] },
-        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Settings UI"), label: Translation.tr("Overlay blur"), description: Translation.tr("Enhanced glass blur for Settings overlay (aurora/angel only)"), keywords: ["settings", "overlay", "blur", "glass", "aurora", "angel"] },
-        // Services (page 6)
-        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("AI"), label: Translation.tr("AI"), description: Translation.tr("System prompt for sidebar AI"), keywords: ["ai", "prompt", "system", "sidebar", "chat"] },
-        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Music Recognition"), label: Translation.tr("Music Recognition"), description: Translation.tr("Song recognition timeout and interval"), keywords: ["music", "recognition", "song", "timeout", "shazam", "songrec"] },
-        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Search"), label: Translation.tr("Search"), description: Translation.tr("Search engine, prefix configuration"), keywords: ["search", "prefix", "engine", "web", "google", "app", "launcher"] },
-        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Weather"), label: Translation.tr("Weather"), description: Translation.tr("Weather units, GPS and city"), keywords: ["weather", "gps", "city", "fahrenheit", "celsius", "temperature", "units"] },
-        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Idle & Power"), label: Translation.tr("Idle & Power"), description: Translation.tr("Screen off, lock and suspend timeouts"), keywords: ["idle", "power", "screen", "off", "lock", "suspend", "sleep", "timeout"] },
-        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Night Light"), label: Translation.tr("Night light"), description: Translation.tr("Blue light filter / color temperature"), keywords: ["night", "light", "blue", "filter", "color", "temperature", "warm", "redshift"] },
-        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("GameMode"), label: Translation.tr("GameMode"), description: Translation.tr("Auto-detect fullscreen games and reduce effects"), keywords: ["game", "mode", "fullscreen", "performance", "fps", "auto", "detect", "animations", "effects"] },
-        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Applications"), label: Translation.tr("Default applications"), description: Translation.tr("Terminal, file manager, browser commands"), keywords: ["apps", "applications", "terminal", "browser", "file", "manager", "discord", "default"] },
-        // Advanced (page 7)
-        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Color generation"), label: Translation.tr("Color generation"), description: Translation.tr("Wallpaper-based color theming and palette type"), keywords: ["color", "generation", "theming", "wallpaper", "matugen", "palette"] },
-        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Color generation"), label: Translation.tr("Terminal saturation"), description: Translation.tr("Saturation intensity of terminal colors from wallpaper"), keywords: ["terminal", "color", "saturation", "vivid", "muted", "intensity"] },
-        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Color generation"), label: Translation.tr("Terminal brightness"), description: Translation.tr("Brightness/lightness of terminal colors from wallpaper"), keywords: ["terminal", "color", "brightness", "lightness", "dark", "light"] },
-        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Color generation"), label: Translation.tr("Terminal harmony"), description: Translation.tr("How much to blend terminal colors with the wallpaper palette"), keywords: ["terminal", "color", "harmony", "blend", "palette", "wallpaper"] },
-        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Performance"), label: Translation.tr("Low power mode"), description: Translation.tr("Reduce resource usage for low-end hardware"), keywords: ["performance", "low", "power", "mode", "reduce", "battery", "laptop"] },
-        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Interactions"), label: Translation.tr("Scrolling"), description: Translation.tr("Touchpad and mouse scroll speed"), keywords: ["scroll", "touchpad", "mouse", "speed", "fast", "slow", "sensitivity"] },
-        // Shortcuts (page 8)
-        { pageIndex: 8, pageName: overlayPages[8].name, section: Translation.tr("Keyboard Shortcuts"), label: Translation.tr("Keyboard Shortcuts"), description: Translation.tr("Niri and ii keybindings reference"), keywords: ["shortcuts", "keybindings", "hotkeys", "keyboard", "cheatsheet", "terminal", "clipboard", "volume", "brightness", "screenshot", "lock", "workspace", "window", "focus", "move", "fullscreen", "floating", "overview", "settings", "wallpaper", "media", "play", "pause"] },
-        // Modules (page 9)
-        { pageIndex: 9, pageName: overlayPages[9].name, section: Translation.tr("Panel Modules"), label: Translation.tr("Panel Modules"), description: Translation.tr("Enable or disable shell modules"), keywords: ["modules", "panels", "enable", "disable", "bar", "sidebar", "overview"] },
-        // Waffle Style (page 10)
-        { pageIndex: 10, pageName: overlayPages[10].name, section: Translation.tr("Waffle Taskbar"), label: Translation.tr("Waffle Taskbar"), description: Translation.tr("Windows 11 style taskbar settings"), keywords: ["waffle", "taskbar", "windows", "bottom", "tray"] },
-        { pageIndex: 10, pageName: overlayPages[10].name, section: Translation.tr("Waffle Start Menu"), label: Translation.tr("Waffle Start Menu"), description: Translation.tr("Start menu size and behavior"), keywords: ["waffle", "start", "menu", "apps", "pinned"] },
-        // About (page 11)
-        { pageIndex: 11, pageName: overlayPages[11].name, section: Translation.tr("About"), label: Translation.tr("About ii"), description: Translation.tr("Version info, credits and links"), keywords: ["about", "version", "credits", "github", "info"] }
+        // Tools (page 6) — recording, crosshair, overlays, region selector, OSD
+        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Screen recording"), label: Translation.tr("Screen recording"), description: Translation.tr("Recording presets, codecs and hardware acceleration"), keywords: ["screen", "record", "recording", "video", "codec", "gpu", "vaapi", "ffmpeg", "capture"] },
+        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Region selector"), label: Translation.tr("Region selector"), description: Translation.tr("Screen snipping and Google Lens region selection"), keywords: ["region", "selector", "snip", "screenshot", "lens", "circle", "selection", "capture"] },
+        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Crosshair overlay"), label: Translation.tr("Crosshair overlay"), description: Translation.tr("In-game crosshair overlay"), keywords: ["crosshair", "overlay", "aim", "game", "fps", "valorant"] },
+        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Discord overlay"), label: Translation.tr("Discord overlay"), description: Translation.tr("Discord activity in sidebar"), keywords: ["discord", "overlay", "activity", "sidebar", "rich", "presence"] },
+        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("Overlay widgets"), label: Translation.tr("Overlay widgets"), description: Translation.tr("Overlay background dim and animations"), keywords: ["overlay", "darken", "scrim", "zoom", "animation", "opacity", "widgets"] },
+        { pageIndex: 6, pageName: overlayPages[6].name, section: Translation.tr("On-screen display"), label: Translation.tr("On-screen display"), description: Translation.tr("Volume and brightness indicator timeout"), keywords: ["osd", "on-screen", "display", "volume", "brightness", "indicator", "timeout"] },
+        // Services (page 7)
+        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("AI"), label: Translation.tr("AI"), description: Translation.tr("System prompt for sidebar AI"), keywords: ["ai", "prompt", "system", "sidebar", "chat"] },
+        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Music Recognition"), label: Translation.tr("Music Recognition"), description: Translation.tr("Song recognition timeout and interval"), keywords: ["music", "recognition", "song", "timeout", "shazam", "songrec"] },
+        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Search"), label: Translation.tr("Search"), description: Translation.tr("Search engine, prefix configuration"), keywords: ["search", "prefix", "engine", "web", "google", "app", "launcher"] },
+        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Weather"), label: Translation.tr("Weather"), description: Translation.tr("Weather units, GPS and city"), keywords: ["weather", "gps", "city", "fahrenheit", "celsius", "temperature", "units"] },
+        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Idle & Power"), label: Translation.tr("Idle & Power"), description: Translation.tr("Screen off, lock and suspend timeouts"), keywords: ["idle", "power", "screen", "off", "lock", "suspend", "sleep", "timeout"] },
+        { pageIndex: 5, pageName: overlayPages[5].name, section: Translation.tr("Controls Card"), label: Translation.tr("Night light"), description: Translation.tr("Show or hide the night light toggle in the sidebar"), keywords: ["night", "light", "blue", "filter", "sidebar", "toggle", "controls"] },
+        { pageIndex: 0, pageName: overlayPages[0].name, section: Translation.tr("GameMode"), label: Translation.tr("GameMode"), description: Translation.tr("Auto-detect fullscreen games and reduce effects"), keywords: ["game", "mode", "fullscreen", "performance", "fps", "auto", "detect", "animations", "effects"] },
+        { pageIndex: 7, pageName: overlayPages[7].name, section: Translation.tr("Applications"), label: Translation.tr("Default applications"), description: Translation.tr("Terminal, file manager, browser commands"), keywords: ["apps", "applications", "terminal", "browser", "file", "manager", "discord", "default"] },
+        // Advanced (page 8)
+        { pageIndex: 8, pageName: overlayPages[8].name, section: Translation.tr("Color generation"), label: Translation.tr("Color generation"), description: Translation.tr("Wallpaper-based color theming and palette type"), keywords: ["color", "generation", "theming", "wallpaper", "matugen", "palette"] },
+        { pageIndex: 8, pageName: overlayPages[8].name, section: Translation.tr("Color generation"), label: Translation.tr("Terminal saturation"), description: Translation.tr("Saturation intensity of terminal colors from wallpaper"), keywords: ["terminal", "color", "saturation", "vivid", "muted", "intensity"] },
+        { pageIndex: 8, pageName: overlayPages[8].name, section: Translation.tr("Color generation"), label: Translation.tr("Terminal brightness"), description: Translation.tr("Brightness/lightness of terminal colors from wallpaper"), keywords: ["terminal", "color", "brightness", "lightness", "dark", "light"] },
+        { pageIndex: 8, pageName: overlayPages[8].name, section: Translation.tr("Color generation"), label: Translation.tr("Terminal harmony"), description: Translation.tr("How much to blend terminal colors with the wallpaper palette"), keywords: ["terminal", "color", "harmony", "blend", "palette", "wallpaper"] },
+        { pageIndex: 8, pageName: overlayPages[8].name, section: Translation.tr("Performance"), label: Translation.tr("Low power mode"), description: Translation.tr("Reduce resource usage for low-end hardware"), keywords: ["performance", "low", "power", "mode", "reduce", "battery", "laptop"] },
+        { pageIndex: 8, pageName: overlayPages[8].name, section: Translation.tr("Interactions"), label: Translation.tr("Scrolling"), description: Translation.tr("Touchpad and mouse scroll speed"), keywords: ["scroll", "touchpad", "mouse", "speed", "fast", "slow", "sensitivity"] },
+        // Shortcuts (page 9)
+        { pageIndex: 9, pageName: overlayPages[9].name, section: Translation.tr("Keyboard Shortcuts"), label: Translation.tr("Keyboard Shortcuts"), description: Translation.tr("Niri and ii keybindings reference"), keywords: ["shortcuts", "keybindings", "hotkeys", "keyboard", "cheatsheet", "terminal", "clipboard", "volume", "brightness", "screenshot", "lock", "workspace", "window", "focus", "move", "fullscreen", "floating", "overview", "settings", "wallpaper", "media", "play", "pause"] },
+        // Modules (page 10)
+        { pageIndex: 10, pageName: overlayPages[10].name, section: Translation.tr("Panel Modules"), label: Translation.tr("Panel Modules"), description: Translation.tr("Enable or disable shell modules"), keywords: ["modules", "panels", "enable", "disable", "bar", "sidebar", "overview"] },
+        { pageIndex: 10, pageName: overlayPages[10].name, section: Translation.tr("Display scaling"), label: Translation.tr("Shell scale"), description: Translation.tr("Scale the entire shell UI for HiDPI / 4K monitors"), keywords: ["scale", "dpi", "hidpi", "4k", "zoom", "size", "display", "monitor", "resolution"] },
+        { pageIndex: 10, pageName: overlayPages[10].name, section: Translation.tr("Wallpaper selector"), label: Translation.tr("Wallpaper selector"), description: Translation.tr("Wallpaper picker style and behavior"), keywords: ["wallpaper", "selector", "picker", "coverflow", "grid", "file"] },
+        { pageIndex: 10, pageName: overlayPages[10].name, section: Translation.tr("Settings UI"), label: Translation.tr("Overlay mode"), description: Translation.tr("Open Settings as floating overlay inside shell for live preview"), keywords: ["settings", "overlay", "mode", "live", "preview", "floating", "window", "layer"] },
+        // Waffle Style (page 11)
+        { pageIndex: 11, pageName: overlayPages[11].name, section: Translation.tr("Waffle Taskbar"), label: Translation.tr("Waffle Taskbar"), description: Translation.tr("Windows 11 style taskbar settings"), keywords: ["waffle", "taskbar", "windows", "bottom", "tray"] },
+        { pageIndex: 11, pageName: overlayPages[11].name, section: Translation.tr("Waffle Start Menu"), label: Translation.tr("Waffle Start Menu"), description: Translation.tr("Start menu size and behavior"), keywords: ["waffle", "start", "menu", "apps", "pinned"] },
+        // Compositor (page 12)
+        { pageIndex: 12, pageName: overlayPages[12].name, section: Translation.tr("Displays"), label: Translation.tr("Display settings"), description: Translation.tr("Monitor resolution, refresh rate, scale and rotation"), keywords: ["display", "monitor", "resolution", "refresh", "scale", "rotation", "transform", "vrr", "output", "hdmi", "dp"] },
+        { pageIndex: 12, pageName: overlayPages[12].name, section: Translation.tr("Input"), label: Translation.tr("Keyboard"), description: Translation.tr("Keyboard repeat delay and rate"), keywords: ["keyboard", "repeat", "delay", "rate", "input", "typing"] },
+        { pageIndex: 12, pageName: overlayPages[12].name, section: Translation.tr("Input"), label: Translation.tr("Touchpad"), description: Translation.tr("Tap to click, natural scroll, acceleration"), keywords: ["touchpad", "tap", "scroll", "natural", "accel", "gesture", "input"] },
+        { pageIndex: 12, pageName: overlayPages[12].name, section: Translation.tr("Input"), label: Translation.tr("Mouse"), description: Translation.tr("Mouse acceleration profile and natural scroll"), keywords: ["mouse", "accel", "flat", "adaptive", "natural", "scroll", "input"] },
+        { pageIndex: 12, pageName: overlayPages[12].name, section: Translation.tr("Layout"), label: Translation.tr("Window gaps"), description: Translation.tr("Gap size between windows"), keywords: ["gaps", "spacing", "windows", "layout", "tiling"] },
+        { pageIndex: 12, pageName: overlayPages[12].name, section: Translation.tr("Layout"), label: Translation.tr("Window border"), description: Translation.tr("Border around all windows"), keywords: ["border", "window", "outline", "width", "layout"] },
+        { pageIndex: 12, pageName: overlayPages[12].name, section: Translation.tr("Layout"), label: Translation.tr("Focus ring"), description: Translation.tr("Highlight ring on focused window"), keywords: ["focus", "ring", "highlight", "active", "window"] },
+        // About (page 13)
+        { pageIndex: 13, pageName: overlayPages[13].name, section: Translation.tr("About"), label: Translation.tr("About ii"), description: Translation.tr("Version info, credits and links"), keywords: ["about", "version", "credits", "github", "info"] }
     ]
 
     function recomputeOverlaySearchResults() {
@@ -177,7 +188,7 @@ Scope {
         var results = [];
 
         var isWaffleActive = Config.options?.panelFamily === "waffle";
-        var wafflePageIndex = 10;
+        var wafflePageIndex = 11;
 
         // 1. Static index
         for (var i = 0; i < overlaySearchIndex.length; i++) {
@@ -990,6 +1001,7 @@ Scope {
                             Flickable {
                                 anchors.fill: parent
                                 anchors.margins: 2
+                                anchors.bottomMargin: overlayWindowToggle.height + 6
                                 contentHeight: navCol.implicitHeight
                                 clip: true
                                 boundsBehavior: Flickable.StopAtBounds
@@ -1112,6 +1124,67 @@ Scope {
                                             }
                                         }
                                     }
+                                }
+                            }
+
+                            // Window mode toggle at bottom of nav
+                            RippleButton {
+                                id: overlayWindowToggle
+                                anchors.bottom: parent.bottom
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.margins: 2
+                                height: 36
+                                buttonRadius: Appearance.rounding.small
+                                colBackground: "transparent"
+                                colBackgroundHover: Appearance.angelEverywhere
+                                    ? Appearance.angel.colGlassCard
+                                    : Appearance.inirEverywhere
+                                        ? Appearance.inir.colLayer1Hover
+                                        : Appearance.auroraEverywhere
+                                            ? Appearance.aurora.colSubSurface
+                                            : CF.ColorUtils.transparentize(Appearance.colors.colLayer1Hover, 0.5)
+
+                                onClicked: {
+                                    Config.setNestedValue("settingsUi.overlayMode", false)
+                                    GlobalStates.settingsOverlayOpen = false
+                                    overlayRestartTimer.restart()
+                                }
+
+                                contentItem: RowLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 10
+                                    anchors.rightMargin: 8
+                                    spacing: 10
+
+                                    MaterialSymbol {
+                                        text: "open_in_new"
+                                        iconSize: 18
+                                        color: Appearance.colors.colOnSurfaceVariant
+                                    }
+
+                                    StyledText {
+                                        Layout.fillWidth: true
+                                        text: Translation.tr("Window")
+                                        font {
+                                            family: Appearance.font.family.main
+                                            pixelSize: Appearance.font.pixelSize.small
+                                        }
+                                        color: Appearance.colors.colOnSurfaceVariant
+                                        elide: Text.ElideRight
+                                    }
+                                }
+
+                                StyledToolTip {
+                                    text: Translation.tr("Switch to window mode")
+                                }
+                            }
+
+                            Timer {
+                                id: overlayRestartTimer
+                                interval: 500
+                                onTriggered: {
+                                    Quickshell.execDetached([Quickshell.shellPath("scripts/inir"), "settings-window"])
                                 }
                             }
                         }
@@ -1608,9 +1681,9 @@ Scope {
     // Navigation categories for grouping pages in the rail
     property var navCategories: [
         { label: Translation.tr("Appearance"), pages: [0, 4, 3] },
-        { label: Translation.tr("Layout"), pages: [2, 5, 10] },
-        { label: Translation.tr("System"), pages: [1, 6, 7] },
-        { label: Translation.tr("Reference"), pages: [8, 9, 11] }
+        { label: Translation.tr("Layout"), pages: [2, 5, 6, 10] },
+        { label: Translation.tr("System"), pages: [1, 7, 8] },
+        { label: Translation.tr("Reference"), pages: [9, 11, 12] }
     ]
 
     property var overlayPages: [
@@ -1622,10 +1695,10 @@ Scope {
             component: Quickshell.shellPath("modules/settings/QuickConfig.qml")
         },
         {
-            name: Translation.tr("General"),
+            name: Translation.tr("System"),
             shortName: "",
             icon: "browse",
-            desc: Translation.tr("Audio, battery, language"),
+            desc: Translation.tr("Audio, battery, language, lock"),
             component: Quickshell.shellPath("modules/settings/GeneralConfig.qml")
         },
         {
@@ -1651,11 +1724,18 @@ Scope {
             component: Quickshell.shellPath("modules/settings/ThemesConfig.qml")
         },
         {
-            name: Translation.tr("Interface"),
+            name: Translation.tr("Panels"),
             shortName: "",
             icon: "bottom_app_bar",
             desc: Translation.tr("Dock, sidebar, overview"),
             component: Quickshell.shellPath("modules/settings/InterfaceConfig.qml")
+        },
+        {
+            name: Translation.tr("Tools"),
+            shortName: "",
+            icon: "build",
+            desc: Translation.tr("Recording, crosshair, overlays"),
+            component: Quickshell.shellPath("modules/settings/ToolsConfig.qml")
         },
         {
             name: Translation.tr("Services"),
@@ -1682,7 +1762,7 @@ Scope {
             name: Translation.tr("Modules"),
             shortName: "",
             icon: "extension",
-            desc: Translation.tr("Enable/disable panels"),
+            desc: Translation.tr("Enable/disable panels, scaling"),
             component: Quickshell.shellPath("modules/settings/ModulesConfig.qml")
         },
         {
@@ -1691,6 +1771,13 @@ Scope {
             icon: "window",
             desc: Translation.tr("Win11-style taskbar"),
             component: Quickshell.shellPath("modules/settings/WaffleConfig.qml")
+        },
+        {
+            name: Translation.tr("Compositor"),
+            shortName: "",
+            icon: "desktop_windows",
+            desc: Translation.tr("Display, input, layout"),
+            component: Quickshell.shellPath("modules/settings/NiriConfig.qml")
         },
         {
             name: Translation.tr("About"),
