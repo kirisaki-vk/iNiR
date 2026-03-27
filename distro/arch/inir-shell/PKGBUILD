@@ -71,6 +71,7 @@ optdepends=(
   'kitty: default terminal integration'
   'kvantum: Qt style engine'
   'libqalculate: calculator widget backend'
+  'mission-center: graphical system monitor (default task manager)'
   'mpv: media playback and YouTube Music support'
   'mpv-mpris: richer mpv media session integration'
   'nautilus: default file manager integration'

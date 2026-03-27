@@ -1235,7 +1235,8 @@
             "showWallpaper": true,
             "showScreenshot": true,
             "showScreenRecord": true,
-            "showSession": true
+            "showSession": true,
+            "showColorScheme": true
         },
         "workspaceNames": {},
         "taskView": {

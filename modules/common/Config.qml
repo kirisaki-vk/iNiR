@@ -1483,6 +1483,7 @@ Singleton {
                     property bool showScreenshot: true
                     property bool showScreenRecord: true
                     property bool showSession: true
+                    property bool showColorScheme: true
                 }
                 property JsonObject workspaceNames: JsonObject {
                     // Custom workspace names, keyed by workspace index (1-based)

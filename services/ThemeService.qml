@@ -38,6 +38,7 @@ Singleton {
         softenColors: Config.options?.appearance?.softenColors ?? true,
     })
     property string _lastLiveRegenSignature: ""
+    property real _lastRegenTimestamp: 0
 
     onCurrentThemeChanged: {
         if (Config.ready) {
@@ -115,6 +116,13 @@ Singleton {
 
     function regenerateAutoTheme(): void {
         root._log("[ThemeService] regenerateAutoTheme called");
+        // Cooldown: prevent rapid successive regenerations (e.g. during settings navigation)
+        const now = Date.now()
+        if (now - root._lastRegenTimestamp < 3000) {
+            root._log("[ThemeService] regenerateAutoTheme skipped — cooldown active");
+            return
+        }
+        root._lastRegenTimestamp = now
         if (isAutoTheme) {
             // Force full regeneration from wallpaper (includes terminals, GTK, etc)
             const themingPath = Wallpapers.currentThemingWallpaperPath()

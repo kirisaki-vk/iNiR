@@ -526,7 +526,10 @@ Scope {
                     layer.enabled: Appearance.effectsEnabled
                     layer.effect: MultiEffect {
                         colorization: 1.0
-                        colorizationColor: Appearance.colors.colOnPrimaryContainer
+                        colorizationColor: {
+                            const c = Appearance.colors.colOnPrimaryContainer
+                            return ColorUtils.hslLightness(c) < 0.2 ? Appearance.colors.colPrimary : c
+                        }
                     }
                 }
             }
