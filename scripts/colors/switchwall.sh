@@ -18,6 +18,18 @@ if ! command -v jq &>/dev/null; then
     exit 1
 fi
 
+# Serialized config.json write — flock prevents concurrent jq writes from
+# clobbering each other. QML's FileView doesn't participate in this lock;
+# ThemeService uses a 100ms delay to let FileView flush before invoking us.
+_config_locked_write() {
+    local lockfile="$SHELL_CONFIG_FILE.lock"
+    (
+        flock -w 5 200 || { echo "[switchwall.sh] config lock timeout" >&2; return 1; }
+        jq "$@" "$SHELL_CONFIG_FILE" > "$SHELL_CONFIG_FILE.tmp" && \
+            mv "$SHELL_CONFIG_FILE.tmp" "$SHELL_CONFIG_FILE"
+    ) 200>"$lockfile"
+}
+
 handle_kde_material_you_colors() {
     # Check if Qt app theming is enabled in config
     if [ -f "$SHELL_CONFIG_FILE" ]; then
@@ -276,7 +288,7 @@ EOF
 set_wallpaper_path() {
     local path="$1"
     if [ -f "$SHELL_CONFIG_FILE" ]; then
-        jq --arg path "$path" '.background.wallpaperPath = $path' "$SHELL_CONFIG_FILE" > "$SHELL_CONFIG_FILE.tmp" && mv "$SHELL_CONFIG_FILE.tmp" "$SHELL_CONFIG_FILE"
+        _config_locked_write --arg path "$path" '.background.wallpaperPath = $path'
     fi
 }
 
@@ -289,7 +301,7 @@ set_wallpaper_path_per_monitor() {
     if [ -f "$SHELL_CONFIG_FILE" ]; then
         # Use jq to update wallpapersByMonitor array
         # Remove existing entry for this monitor, then add new entry
-        jq --arg monitor "$monitor" \
+        _config_locked_write --arg monitor "$monitor" \
            --arg path "$path" \
            --argjson startWs "${startWs:-1}" \
            --argjson endWs "${endWs:-10}" \
@@ -302,21 +314,21 @@ set_wallpaper_path_per_monitor() {
                    "workspaceFirst": $startWs,
                    "workspaceLast": $endWs
                }]
-           )' "$SHELL_CONFIG_FILE" > "$SHELL_CONFIG_FILE.tmp" && mv "$SHELL_CONFIG_FILE.tmp" "$SHELL_CONFIG_FILE"
+           )'
     fi
 }
 
 set_thumbnail_path() {
     local path="$1"
     if [ -f "$SHELL_CONFIG_FILE" ]; then
-        jq --arg path "$path" '.background.thumbnailPath = $path' "$SHELL_CONFIG_FILE" > "$SHELL_CONFIG_FILE.tmp" && mv "$SHELL_CONFIG_FILE.tmp" "$SHELL_CONFIG_FILE"
+        _config_locked_write --arg path "$path" '.background.thumbnailPath = $path'
     fi
 }
 
 set_backdrop_thumbnail_path() {
     local path="$1"
     if [ -f "$SHELL_CONFIG_FILE" ]; then
-        jq --arg path "$path" '.background.backdrop.thumbnailPath = $path' "$SHELL_CONFIG_FILE" > "$SHELL_CONFIG_FILE.tmp" && mv "$SHELL_CONFIG_FILE.tmp" "$SHELL_CONFIG_FILE"
+        _config_locked_write --arg path "$path" '.background.backdrop.thumbnailPath = $path'
     fi
 }
 
@@ -727,7 +739,7 @@ main() {
 
     set_accent_color() {
         local color="$1"
-        jq --arg color "$color" '.appearance.palette.accentColor = $color' "$SHELL_CONFIG_FILE" > "$SHELL_CONFIG_FILE.tmp" && mv "$SHELL_CONFIG_FILE.tmp" "$SHELL_CONFIG_FILE"
+        _config_locked_write --arg color "$color" '.appearance.palette.accentColor = $color'
     }
 
     detect_scheme_type_from_image() {
