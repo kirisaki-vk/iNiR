@@ -316,12 +316,15 @@ cleanup_old_snapshots() {
 # Check remote for updates
 ###############################################################################
 check_remote_updates() {
+    # Returns: 0 = updates available, 1 = no updates, 2 = error (offline/no git)
     if [[ ! -d "${REPO_ROOT}/.git" ]]; then
-        return 1
+        return 2
     fi
     
-    # Fetch silently
-    git -C "$REPO_ROOT" fetch origin --quiet 2>/dev/null || return 1
+    # Fetch silently — distinguish network failure from no-updates
+    if ! git -C "$REPO_ROOT" fetch origin --quiet 2>/dev/null; then
+        return 2
+    fi
     
     local branch=$(git -C "$REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null)
     [[ -z "$branch" || "$branch" == "HEAD" ]] && branch="main"

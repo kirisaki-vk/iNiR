@@ -34,6 +34,13 @@ resolve_bootstrap_repo_root() {
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(resolve_bootstrap_repo_root "$SCRIPT_DIR")"
+
+if [[ ! -d "$REPO_ROOT" || ! -f "$REPO_ROOT/shell.qml" ]]; then
+    echo "Error: Could not find iNiR repository (resolved to: ${REPO_ROOT:-<empty>})" >&2
+    echo "Run this script from the iNiR repo directory, or fix ~/.config/illogical-impulse/version.json" >&2
+    exit 1
+fi
+
 cd "$REPO_ROOT"
 
 # Handle Ctrl+C gracefully
@@ -779,40 +786,51 @@ run_update() {
     if [[ "${_II_POST_PULL:-}" == "1" ]]; then
         unset _II_POST_PULL
         tui_success "Libraries reloaded after pull"
-    elif check_remote_updates; then
-        show_pending_commits
-
-        if $ask; then
-            if ! tui_confirm "Pull and apply these updates?"; then
-                echo "Cancelled."
-                return 0
-            fi
-        fi
-
-        # Create snapshot BEFORE pulling
-        tui_info "Creating snapshot..."
-        local remote_commit=$(get_remote_commit)
-        local snapshot_id=$(create_snapshot "update" "Before update to ${remote_commit}" "$remote_commit")
-        tui_success "Snapshot: $snapshot_id"
-
-        # Pull changes
-        tui_info "Pulling changes..."
-        if ! git -C "$REPO_ROOT" pull --ff-only origin 2>/dev/null; then
-            tui_error "Git pull failed. You may have local changes."
-            tui_info "Try: git stash && ./setup update"
-            return 1
-        fi
-        tui_success "Changes pulled"
-
-        # Re-exec to pick up updated library code from the pull.
-        # Without this, functions sourced at startup (doctor, migrations, etc.)
-        # would still be the OLD versions in memory.
-        local reexec_args=("update")
-        $ask || reexec_args+=("-y")
-        $quiet && reexec_args+=("-q")
-        export _II_POST_PULL=1
-        exec "$REPO_ROOT/setup" "${reexec_args[@]}"
     else
+        local update_rc=0
+        check_remote_updates || update_rc=$?
+
+        if [[ "$update_rc" -eq 0 ]]; then
+            # Updates available
+            show_pending_commits
+
+            if $ask; then
+                if ! tui_confirm "Pull and apply these updates?"; then
+                    echo "Cancelled."
+                    return 0
+                fi
+            fi
+
+            # Create snapshot BEFORE pulling
+            tui_info "Creating snapshot..."
+            local remote_commit=$(get_remote_commit)
+            local snapshot_id=$(create_snapshot "update" "Before update to ${remote_commit}" "$remote_commit")
+            tui_success "Snapshot: $snapshot_id"
+
+            # Pull changes
+            tui_info "Pulling changes..."
+            if ! git -C "$REPO_ROOT" pull --ff-only origin 2>/dev/null; then
+                tui_error "Git pull failed. You may have local changes."
+                tui_info "Try: git stash && ./setup update"
+                return 1
+            fi
+            tui_success "Changes pulled"
+
+            # Re-exec to pick up updated library code from the pull.
+            # Without this, functions sourced at startup (doctor, migrations, etc.)
+            # would still be the OLD versions in memory.
+            local reexec_args=("update")
+            $ask || reexec_args+=("-y")
+            $quiet && reexec_args+=("-q")
+            export _II_POST_PULL=1
+            exec "$REPO_ROOT/setup" "${reexec_args[@]}"
+        elif [[ "$update_rc" -eq 2 ]]; then
+            # Could not check remote (offline or not a git repo)
+            tui_warn "Could not check for remote updates (offline or not a git repo)"
+            tui_info "Checking local repo vs installed version..."
+        fi
+        # Fall through: rc=1 (no updates) or rc=2 (error) — check local repo vs installed
+
         # Check if local repo is ahead of installed
         local installed_ver=$(get_installed_version)
         local installed_commit=$(get_installed_commit)
