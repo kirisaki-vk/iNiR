@@ -50,7 +50,6 @@ check_dependencies() {
         "curl:curl"
         "git:git"
         "python3:python3"
-        "matugen:matugen"
         "fish:fish"
         "magick:ImageMagick"
         "grim:grim"
@@ -862,13 +861,8 @@ check_matugen_colors() {
             [[ -n "$wallpaper" ]] && wallpaper_source="bundled fallback wallpaper"
         fi
         
-        if [[ -n "$wallpaper" && -f "$wallpaper" && -s "$wallpaper" ]] && command -v matugen &>/dev/null; then
-            local matugen_cfg="${XDG_CONFIG_HOME}/matugen/config.toml"
-            if [[ -f "$matugen_cfg" ]]; then
-                matugen -c "$matugen_cfg" image "$wallpaper" 2>/dev/null
-            else
-                matugen image "$wallpaper" 2>/dev/null
-            fi
+        if [[ -n "$wallpaper" && -f "$wallpaper" && -s "$wallpaper" ]]; then
+            local template_dir="${XDG_CONFIG_HOME}/matugen"
 
             local runtime_dir
             runtime_dir="$(doctor_runtime_dir)"
@@ -883,7 +877,7 @@ check_matugen_colors() {
                 fi
             fi
 
-            if [[ ! -f "$colors_json" && -n "$gen_material_script" ]]; then
+            if [[ -n "$gen_material_script" ]]; then
                 local python_cmd=""
                 local venv_python="${XDG_STATE_HOME}/quickshell/.venv/bin/python3"
                 if [[ -x "$venv_python" ]]; then
@@ -894,10 +888,13 @@ check_matugen_colors() {
 
                 if [[ -n "$python_cmd" ]]; then
                     mkdir -p "$(dirname "$colors_json")"
+                    local _render_args=()
+                    [[ -d "$template_dir" && -f "$template_dir/templates.json" ]] && _render_args+=(--render-templates "$template_dir")
                     "$python_cmd" "$gen_material_script" \
                         --path "$wallpaper" \
                         --mode dark \
                         --json-output "$colors_json" \
+                        "${_render_args[@]}" \
                         >/dev/null 2>&1 || true
                 fi
             fi
@@ -906,16 +903,12 @@ check_matugen_colors() {
                 doctor_fix "Regenerated theme colors from ${wallpaper_source}"
             else
                 doctor_fail "Theme colors regeneration failed"
-                echo -e "    ${STY_FAINT}matugen ran but no generated color files were produced${STY_RST}"
+                echo -e "    ${STY_FAINT}Python color generation failed — check venv${STY_RST}"
                 return 1
             fi
         else
             doctor_fail "Theme colors not generated"
-            if ! command -v matugen &>/dev/null; then
-                echo -e "    ${STY_FAINT}Install matugen, then run: ./setup doctor${STY_RST}"
-            else
-                echo -e "    ${STY_FAINT}Set a wallpaper via settings or run: matugen image /path/to/wallpaper.png${STY_RST}"
-            fi
+            echo -e "    ${STY_FAINT}Set a wallpaper via settings, then run: ./setup doctor${STY_RST}"
             return 1
         fi
     else

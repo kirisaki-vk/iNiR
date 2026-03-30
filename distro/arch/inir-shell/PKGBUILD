@@ -19,7 +19,6 @@ depends=(
   jq
   kirigami
   libnotify
-  matugen
   networkmanager
   niri
   noto-fonts-emoji

@@ -550,10 +550,6 @@ install-cliphist(){
   install-github-binary "cliphist" "sentriz/cliphist" "linux-amd64$"
 }
 
-install-matugen(){
-  install-github-binary "matugen" "InioX/matugen" "x86_64.*tar.gz"
-}
-
 install-starship(){
   if command -v starship &>/dev/null; then
     log_success "Starship already installed"
@@ -1057,7 +1053,6 @@ install-all-tools(){
   install-eza
   install-uv
   install-cliphist
-  install-matugen
 
   log_success "All tools installed"
 }

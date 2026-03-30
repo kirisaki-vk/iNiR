@@ -980,25 +980,6 @@ run_update() {
 
     tui_success "Files synced"
 
-    # Ensure matugen config contains the ii-pixel SDDM sync post_hook template.
-    # We only append the missing block (idempotent) to avoid overwriting user templates.
-    if command -v matugen >/dev/null 2>&1; then
-        local matugen_cfg="${XDG_CONFIG_HOME}/matugen/config.toml"
-        if [[ -f "$matugen_cfg" ]]; then
-            if ! grep -q "\[templates\.ii_pixel_sddm_sync\]" "$matugen_cfg" 2>/dev/null; then
-                echo "" >> "$matugen_cfg"
-                cat >> "$matugen_cfg" << 'MATUGEN_SDDM_EOF'
-
-# SDDM ii-pixel theme sync (safe no-op if script/theme are not present)
-[templates.ii_pixel_sddm_sync]
-input_path = '/dev/null'
-output_path = '/dev/null'
-post_hook = 'bash -lc "[[ -x ~/.local/bin/sync-pixel-sddm.py && -d /usr/share/sddm/themes/ii-pixel ]] && nohup python3 ~/.local/bin/sync-pixel-sddm.py >/dev/null 2>&1 &"'
-MATUGEN_SDDM_EOF
-            fi
-        fi
-    fi
-
     # Refresh ii-pixel SDDM theme on update (keeps shipped theme in sync with fixes)
     # Intelligent behavior:
     # - interactive mode: installer decides (prompt if another SDDM theme is active)

@@ -16,7 +16,6 @@ pkgbase = inir-shell-git
 	depends = jq
 	depends = kirigami
 	depends = libnotify
-	depends = matugen
 	depends = networkmanager
 	depends = niri
 	depends = noto-fonts-emoji

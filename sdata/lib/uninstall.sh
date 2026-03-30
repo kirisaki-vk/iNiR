@@ -36,7 +36,7 @@ declare -A INIR_ONLY_PATHS=(
 # critical_level: essential (user likely needs), optional (can remove), inir_default (iNiR created)
 declare -A SHARED_PATHS=(
     ["${XDG_CONFIG_HOME}/niri/config.kdl"]="Niri compositor config|niri|essential"
-    ["${XDG_CONFIG_HOME}/matugen"]="Matugen color config|matugen|optional"
+    ["${XDG_CONFIG_HOME}/matugen"]="iNiR theming templates|python3|optional"
     ["${XDG_CONFIG_HOME}/fuzzel"]="Fuzzel launcher config|fuzzel|optional"
     ["${XDG_CONFIG_HOME}/Kvantum"]="Kvantum Qt theme|kvantummanager|optional"
     ["${XDG_CONFIG_HOME}/kdeglobals"]="KDE global settings||optional"
@@ -59,7 +59,6 @@ declare -A QUICKSHELL_SHARED=(
 declare -A INIR_PACKAGES=(
     ["qs"]="quickshell|Shell framework|inir_only"
     ["niri"]="niri|Wayland compositor|compositor"
-    ["matugen"]="matugen|Color scheme generator|optional_tool"
     ["cliphist"]="cliphist|Clipboard history|system_tool"
     ["fuzzel"]="fuzzel|Application launcher|system_tool"
     ["swaylock"]="swaylock|Screen locker|system_tool"

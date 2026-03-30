@@ -130,7 +130,7 @@ tui_title "Installation Plan"
 
 tui_list_item "Install packages (Niri, Quickshell, Qt6, fonts...)"
 tui_list_item "Configure user groups and systemd services"
-tui_list_item "Setup GTK/Qt theming (Matugen, Kvantum)"
+tui_list_item "Setup GTK/Qt theming (Material You, Kvantum)"
 tui_list_item "Copy configs to ~/.config/ (with backups)"
 tui_list_item "Set default wallpaper and generate theme"
 
