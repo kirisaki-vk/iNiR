@@ -61,6 +61,8 @@ check_dependencies() {
         "hyprpicker:hyprpicker"
         "playerctl:playerctl"
         "notify-send:libnotify"
+        "flock:util-linux"
+        "go:go"
     )
     
     # Optional but recommended
@@ -957,12 +959,11 @@ check_conflicting_services() {
     done
     
     if [[ ${#running[@]} -gt 0 ]]; then
-        # Auto-kill conflicting notification daemons
         for proc in "${running[@]}"; do
             pkill -x "$proc" 2>/dev/null
             systemctl --user disable --now "${proc}.service" 2>/dev/null || true
         done
-        doctor_fix "Killed conflicting: ${running[*]} (Quickshell has built-in notifications)"
+        doctor_fix "Stopped conflicting: ${running[*]} (iNiR has built-in notifications, re-enable with: systemctl --user enable <service>)"
     else
         doctor_pass "No conflicting notification daemons"
     fi
@@ -1065,8 +1066,26 @@ check_qt_theming() {
     # Check that plasma-integration is installed (required for kde platform theme)
     # Without it, Darkly style can't read kdeglobals colors → black text on dark bg
     local plugin_found=false
-    for plugindir in /usr/lib/qt6/plugins/platformthemes /usr/lib64/qt6/plugins/platformthemes \
-                     /usr/lib/x86_64-linux-gnu/qt6/plugins/platformthemes; do
+    
+    # Try dynamic resolution first, then known paths as fallback
+    local search_dirs=()
+    if command -v qtpaths6 &>/dev/null; then
+        local qt_plugin_dir
+        qt_plugin_dir=$(qtpaths6 --plugin-dir 2>/dev/null || true)
+        [[ -n "$qt_plugin_dir" ]] && search_dirs+=("${qt_plugin_dir}/platformthemes")
+    elif command -v qtpaths &>/dev/null; then
+        local qt_plugin_dir
+        qt_plugin_dir=$(qtpaths --plugin-dir 2>/dev/null || true)
+        [[ -n "$qt_plugin_dir" ]] && search_dirs+=("${qt_plugin_dir}/platformthemes")
+    fi
+    # Known fallback paths for common distros
+    search_dirs+=(
+        /usr/lib/qt6/plugins/platformthemes
+        /usr/lib64/qt6/plugins/platformthemes
+        /usr/lib/x86_64-linux-gnu/qt6/plugins/platformthemes
+    )
+    
+    for plugindir in "${search_dirs[@]}"; do
         if [[ -f "${plugindir}/KDEPlasmaPlatformTheme6.so" ]]; then
             plugin_found=true
             break
@@ -1094,8 +1113,22 @@ check_qt_theming() {
 
     # Check Darkly style is installed
     local darkly_found=false
-    for styledir in /usr/lib/qt6/plugins/styles /usr/lib64/qt6/plugins/styles \
-                    /usr/lib/x86_64-linux-gnu/qt6/plugins/styles; do
+    local style_dirs=()
+    if command -v qtpaths6 &>/dev/null; then
+        local qt_plugin_dir
+        qt_plugin_dir=$(qtpaths6 --plugin-dir 2>/dev/null || true)
+        [[ -n "$qt_plugin_dir" ]] && style_dirs+=("${qt_plugin_dir}/styles")
+    elif command -v qtpaths &>/dev/null; then
+        local qt_plugin_dir
+        qt_plugin_dir=$(qtpaths --plugin-dir 2>/dev/null || true)
+        [[ -n "$qt_plugin_dir" ]] && style_dirs+=("${qt_plugin_dir}/styles")
+    fi
+    style_dirs+=(
+        /usr/lib/qt6/plugins/styles
+        /usr/lib64/qt6/plugins/styles
+        /usr/lib/x86_64-linux-gnu/qt6/plugins/styles
+    )
+    for styledir in "${style_dirs[@]}"; do
         if [[ -f "${styledir}/darkly6.so" ]]; then
             darkly_found=true
             break
