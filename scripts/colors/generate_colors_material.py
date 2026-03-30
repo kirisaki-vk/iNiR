@@ -216,7 +216,6 @@ if args.path is not None:
         image = image.resize((wsize_new, hsize_new), Image.Resampling.BICUBIC)
     colors = QuantizeCelebi(list(image.getdata()), 128)
     argb = Score.score(colors)[0]
-    argb = scale_chroma(argb, args.color_strength, 96)
 
     if args.cache is not None:
         with open(args.cache, "w") as file:
@@ -227,7 +226,6 @@ if args.path is not None:
             args.scheme = "neutral"
 elif args.color is not None:
     argb = hex_to_argb(args.color)
-    argb = scale_chroma(argb, args.color_strength, 96)
     hct = Hct.from_int(argb)
 
 if args.scheme == "scheme-fruit-salad":
@@ -269,6 +267,15 @@ for color in vars(MaterialDynamicColors).keys():
         ]:
             generated_hct = Hct.from_hct(
                 generated_hct.hue, generated_hct.chroma * 0.60, generated_hct.tone
+            )
+
+        # Scale output chroma for color strength — skip near-achromatic tokens
+        # (chroma < 2 means effectively gray/black/white, leave untouched)
+        if abs(args.color_strength - 1.0) > 1e-6 and generated_hct.chroma > 2.0:
+            generated_hct = Hct.from_hct(
+                generated_hct.hue,
+                generated_hct.chroma * args.color_strength,
+                generated_hct.tone,
             )
 
         rgba = generated_hct.to_rgba()
