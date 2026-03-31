@@ -1,17 +1,25 @@
 # ── Editor / IDE ──────────────────────────────────────────────
-.vscode/
 .idea/
 .zed/
+.vscode/
 *.swp
 *~
 
-# ── AI tooling (all local-only, never distribute) ────────────
-CLAUDE.md
-GEMINI.md*
+# ── AI tooling (local-only, never distribute) ─────────────────
+# Agent config files
 AGENTS.md
-ARCHITECTURE.md
-CONTRIBUTING.md
+GEMINI.md*
+CLAUDE.md
 agents/
+kilo.json
+mcp.json
+opencode.json
+prompts/
+Session.md*
+session-*.md
+**/codemap.md
+
+# AI tool directories
 .claude/
 .cursor/
 .continue/
@@ -39,14 +47,8 @@ context-architect/
 hooks/
 inir-docs/
 inir-mcp/
-kilo.json
-mcp.json
-opencode.json
-prompts/
-prompt-framework-opencode.md
-Session.md*
-session-*.md
-**/codemap.md
+
+# GitHub AI-specific (not shipped)
 .github/agents/
 .github/copilot-instructions.md
 .github/instructions/
@@ -118,6 +120,8 @@ glob
 sys
 *.ps
 
-# ── Stale paths (kept to prevent accidental commits) ─────────
+# ── Stale paths (prevent accidental commits) ─────────────────
 /src/
 modules/ii/overlay/floatingImage/undefined/
+docs-site/
+prompt-framework-opencode.md
