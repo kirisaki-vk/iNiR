@@ -142,9 +142,60 @@ return {
       },
     },
     config = function(_, opts)
-      require("aether").setup(opts)
-      vim.cmd.colorscheme("aether")
+      local theme_file = vim.fn.stdpath("config") .. "/lua/plugins/neovim.lua"
+      local theme_dir = vim.fn.fnamemodify(theme_file, ":h")
+      local theme_name = vim.fn.fnamemodify(theme_file, ":t")
+      local uv = vim.uv or vim.loop
+
+      local function apply_inir_theme(next_opts)
+        require("aether").setup(next_opts)
+        vim.cmd.colorscheme("aether")
+      end
+
+      local function reload_inir_theme()
+        if vim.g.colors_name ~= "aether" then
+          return
+        end
+
+        local ok, spec = pcall(dofile, theme_file)
+        if not ok or type(spec) ~= "table" or type(spec[1]) ~= "table" then
+          return
+        end
+
+        apply_inir_theme(spec[1].opts or {})
+        vim.cmd("redraw!")
+      end
+
+      apply_inir_theme(opts)
       require("aether.hotreload").setup()
+
+      if vim.g.inir_aether_watch_started == 1 or not uv then
+        return
+      end
+
+      local fs_event = uv.new_fs_event()
+      if not fs_event then
+        return
+      end
+
+      local reload_pending = false
+      fs_event:start(theme_dir, {}, function(err, fname)
+        if err or reload_pending then
+          return
+        end
+        if fname and fname ~= theme_name then
+          return
+        end
+
+        reload_pending = true
+        vim.schedule(function()
+          reload_pending = false
+          reload_inir_theme()
+        end)
+      end)
+
+      vim.g.inir_aether_watch_started = 1
+      vim.__inir_aether_fs_event = fs_event
     end,
   },
   {
