@@ -55,48 +55,82 @@ json_color() {
 }
 
 generate_neovim_spec() {
-  local colors_file="$1"
-  local terminal_file="$2"
-  local background fg dark_bg darker_bg lighter_bg
-  local dark_fg light_fg bright_fg muted
-  local red yellow orange green cyan blue purple brown
-  local bright_red bright_yellow bright_green bright_cyan bright_blue bright_purple
-  local accent selection selection_fg
-
-  background=$(json_color "$colors_file" background "#151311")
-  fg=$(json_color "$colors_file" on_background "#E8E1DE")
-  dark_bg=$(json_color "$colors_file" surface_container_low "#1E1B19")
-  darker_bg=$(json_color "$colors_file" surface_container_lowest "#100D0C")
-  lighter_bg=$(json_color "$colors_file" surface_container_highest "#383432")
-
-  dark_fg=$(json_color "$colors_file" on_surface_variant "#CFC4BD")
-  light_fg=$(json_color "$terminal_file" term15 "$fg")
-  bright_fg=$(json_color "$colors_file" inverse_surface "$light_fg")
-  muted=$(json_color "$colors_file" outline "#998F88")
-
-  red=$(json_color "$terminal_file" term1 "#CA917F")
-  yellow=$(json_color "$terminal_file" term11 "#E2CBB5")
-  orange=$(json_color "$colors_file" primary "#F3D9C5")
-  green=$(json_color "$terminal_file" term2 "#BBBB97")
-  cyan=$(json_color "$terminal_file" term6 "#B5C8AA")
-  blue=$(json_color "$terminal_file" term4 "#B19FB6")
-  purple=$(json_color "$terminal_file" term5 "#BF9EA4")
-  brown=$(json_color "$colors_file" secondary_container "#50443B")
-
-  bright_red=$(json_color "$terminal_file" term9 "#DDB2A6")
-  bright_yellow=$(json_color "$terminal_file" term11 "$yellow")
-  bright_green=$(json_color "$terminal_file" term10 "#D4D4B0")
-  bright_cyan=$(json_color "$terminal_file" term14 "#D6E9CA")
-  bright_blue=$(json_color "$terminal_file" term12 "#D2C0D9")
-  bright_purple=$(json_color "$terminal_file" term13 "#E0BFC6")
-
-  accent=$(json_color "$colors_file" primary "$blue")
-  selection=$(json_color "$colors_file" surface_container_high "#2D2928")
-  selection_fg="$fg"
-
   mkdir -p "$NEOVIM_PLUGIN_DIR"
   local tmp_file="${NEOVIM_THEME_FILE}.tmp"
   cat > "$tmp_file" <<EOF
+local generated_dir = vim.fn.expand("~/.local/state/quickshell/user/generated")
+local palette_file = generated_dir .. "/palette.json"
+local terminal_file = generated_dir .. "/terminal.json"
+local legacy_colors_file = generated_dir .. "/colors.json"
+
+local function read_json(path)
+  local ok, lines = pcall(vim.fn.readfile, path)
+  if not ok or not lines or vim.tbl_isempty(lines) then
+    return {}
+  end
+
+  local ok_decode, decoded = pcall(vim.json.decode, table.concat(lines, "\n"))
+  if not ok_decode or type(decoded) ~= "table" then
+    return {}
+  end
+
+  return decoded
+end
+
+local function load_inir_colors()
+  local palette = read_json(palette_file)
+  if vim.tbl_isempty(palette) then
+    palette = read_json(legacy_colors_file)
+  end
+  local terminal = read_json(terminal_file)
+
+  local function pick(tbl, key, fallback)
+    local value = tbl[key]
+    return type(value) == "string" and value ~= "" and value or fallback
+  end
+
+  local fg = pick(palette, "on_background", "#E8E1DE")
+  local blue = pick(terminal, "term4", "#B19FB6")
+  local yellow = pick(terminal, "term11", "#E2CBB5")
+
+  return {
+    bg = pick(palette, "background", "#151311"),
+    dark_bg = pick(palette, "surface_container_low", "#1E1B19"),
+    darker_bg = pick(palette, "surface_container_lowest", "#100D0C"),
+    lighter_bg = pick(palette, "surface_container_highest", "#383432"),
+
+    fg = fg,
+    dark_fg = pick(palette, "on_surface_variant", "#CFC4BD"),
+    light_fg = pick(terminal, "term15", fg),
+    bright_fg = pick(palette, "inverse_surface", fg),
+    muted = pick(palette, "outline", "#998F88"),
+
+    red = pick(terminal, "term1", "#CA917F"),
+    yellow = yellow,
+    orange = pick(palette, "primary", "#F3D9C5"),
+    green = pick(terminal, "term2", "#BBBB97"),
+    cyan = pick(terminal, "term6", "#B5C8AA"),
+    blue = blue,
+    purple = pick(terminal, "term5", "#BF9EA4"),
+    brown = pick(palette, "secondary_container", "#50443B"),
+
+    bright_red = pick(terminal, "term9", "#DDB2A6"),
+    bright_yellow = yellow,
+    bright_green = pick(terminal, "term10", "#D4D4B0"),
+    bright_cyan = pick(terminal, "term14", "#D6E9CA"),
+    bright_blue = pick(terminal, "term12", "#D2C0D9"),
+    bright_purple = pick(terminal, "term13", "#E0BFC6"),
+
+    accent = pick(palette, "primary", blue),
+    cursor = fg,
+    foreground = fg,
+    background = pick(palette, "background", "#151311"),
+    selection = pick(palette, "surface_container_high", "#2D2928"),
+    selection_foreground = fg,
+    selection_background = pick(palette, "surface_container_high", "#2D2928"),
+  }
+end
+
 return {
   {
     "bjarneo/aether.nvim",
@@ -104,54 +138,20 @@ return {
     name = "inir-neovim",
     priority = 1000,
     opts = {
-      colors = {
-        bg = "$background",
-        dark_bg = "$dark_bg",
-        darker_bg = "$darker_bg",
-        lighter_bg = "$lighter_bg",
-
-        fg = "$fg",
-        dark_fg = "$dark_fg",
-        light_fg = "$light_fg",
-        bright_fg = "$bright_fg",
-        muted = "$muted",
-
-        red = "$red",
-        yellow = "$yellow",
-        orange = "$orange",
-        green = "$green",
-        cyan = "$cyan",
-        blue = "$blue",
-        purple = "$purple",
-        brown = "$brown",
-
-        bright_red = "$bright_red",
-        bright_yellow = "$bright_yellow",
-        bright_green = "$bright_green",
-        bright_cyan = "$bright_cyan",
-        bright_blue = "$bright_blue",
-        bright_purple = "$bright_purple",
-
-        accent = "$accent",
-        cursor = "$fg",
-        foreground = "$fg",
-        background = "$background",
-        selection = "$selection",
-        selection_foreground = "$selection_fg",
-        selection_background = "$selection",
-      },
+      colors = load_inir_colors(),
     },
     config = function(_, opts)
-      local theme_file = vim.fn.stdpath("config") .. "/lua/plugins/neovim.lua"
-      local generated_dir = vim.fn.expand("~/.local/state/quickshell/user/generated")
       local uv = vim.uv or vim.loop
       local watched_files = {
-        [generated_dir .. "/palette.json"] = true,
-        [generated_dir .. "/terminal.json"] = true,
-        [generated_dir .. "/colors.json"] = true,
+        [palette_file] = true,
+        [terminal_file] = true,
+        [legacy_colors_file] = true,
       }
 
       local function apply_inir_theme(next_opts)
+        next_opts = vim.tbl_deep_extend("force", next_opts or {}, {
+          colors = load_inir_colors(),
+        })
         require("aether").setup(next_opts)
         vim.cmd.colorscheme("aether")
       end
@@ -161,12 +161,7 @@ return {
           return
         end
 
-        local ok, spec = pcall(dofile, theme_file)
-        if not ok or type(spec) ~= "table" or type(spec[1]) ~= "table" then
-          return
-        end
-
-        apply_inir_theme(spec[1].opts or {})
+        apply_inir_theme(opts)
         vim.cmd("redraw!")
       end
 
