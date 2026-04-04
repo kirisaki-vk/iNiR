@@ -290,22 +290,18 @@ fi
 # This MUST run AFTER theming templates are deployed above, because the distributed
 # config includes the SDDM sync post_hook template.
 if command -v sddm &>/dev/null; then
-  function setup_sddm_theme(){
-    tui_info "Setting up ii-pixel-sddm login theme..."
-    local sddm_script="${REPO_ROOT}/scripts/sddm/install-pixel-sddm.sh"
-    if [[ -f "$sddm_script" ]]; then
-      chmod +x "$sddm_script"
-      # Fresh install: apply theme automatically (user chose to install iNiR)
-      # Non-interactive (-y): also apply automatically (scripted installs want full setup)
-      # Only "ask" makes sense for updates where user might have another theme
-      local _sddm_auto_apply="yes"
-      INIR_SDDM_AUTO_APPLY="${_sddm_auto_apply}" bash "$sddm_script" || log_warning "ii-pixel-sddm setup had issues (non-fatal)"
+  if [[ "${INSTALL_FIRSTRUN}" == true ]]; then
+    if [[ "${ask}" == "true" ]]; then
+      tui_info "Optional: install ii-pixel-sddm login theme (matches iNiR lockscreen)."
+      if tui_confirm "Install ii-pixel-sddm now?" "no"; then
+        extras_install_sddm_theme "yes"
+      else
+        log_info "Skipping ii-pixel-sddm setup"
+      fi
     else
-      log_warning "ii-pixel-sddm install script not found, skipping"
+      log_info "Skipping ii-pixel-sddm setup in non-interactive install"
     fi
-  }
-  showfun setup_sddm_theme
-  v setup_sddm_theme
+  fi
 fi
 
 # Fuzzel (launcher)
@@ -811,16 +807,34 @@ if [[ -d "${II_TARGET}/assets/wallpapers" ]]; then
   fi
 fi
 
+# Optional extra wallpapers (fresh install interactive only)
+INIR_WALLS_DEFAULT_OVERRIDE=""
+if [[ "${INSTALL_FIRSTRUN}" == true && "${ask}" == "true" ]]; then
+  if tui_confirm "Download and install iNiR-Walls wallpapers?" "no"; then
+    EXTRAS_INIR_WALLS_FIRST_IMAGE=""
+    extras_install_inir_walls
+    INIR_WALLS_FIRST="${EXTRAS_INIR_WALLS_FIRST_IMAGE}"
+    if [[ -n "$INIR_WALLS_FIRST" ]] && tui_confirm "Replace iNiR default wallpaper selection with an iNiR-Walls wallpaper?" "yes"; then
+      INIR_WALLS_DEFAULT_OVERRIDE="$INIR_WALLS_FIRST"
+      log_success "Default wallpaper source switched to iNiR-Walls"
+    fi
+  fi
+fi
+
 #####################################################################################
 # Set default wallpaper and generate initial theme (first run only)
 #####################################################################################
 # Pick the first available wallpaper (don't hardcode a filename that may not exist)
 DEFAULT_WALLPAPER=""
+if [[ -n "$INIR_WALLS_DEFAULT_OVERRIDE" && -f "$INIR_WALLS_DEFAULT_OVERRIDE" && -s "$INIR_WALLS_DEFAULT_OVERRIDE" ]]; then
+  DEFAULT_WALLPAPER="$INIR_WALLS_DEFAULT_OVERRIDE"
+fi
 for candidate in \
   "${USER_WALLPAPERS_DIR}/G5uBmitWkAAyk8s.jpg" \
   "${USER_WALLPAPERS_DIR}/Angel1.png" \
   "${USER_WALLPAPERS_DIR}/qs-niri.jpg"
 do
+  [[ -n "$DEFAULT_WALLPAPER" ]] && break
   if [[ -f "$candidate" && -s "$candidate" ]]; then
     DEFAULT_WALLPAPER="$candidate"
     break

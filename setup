@@ -100,6 +100,7 @@ source ./sdata/lib/conflicts.sh
 source ./sdata/lib/versioning.sh
 source ./sdata/lib/migrations.sh
 source ./sdata/lib/robust-update.sh
+source ./sdata/lib/extras.sh
 source ./sdata/lib/doctor.sh
 source ./sdata/lib/snapshots.sh
 source ./sdata/lib/uninstall.sh
@@ -220,6 +221,7 @@ show_help() {
     tui_list_item "info        System and shell details dashboard"
     tui_list_item "backup      Create a manual snapshot"
     tui_list_item "logs        View recent runtime logs"
+    tui_list_item "extras      Install optional extras (iNiR-Walls / SDDM theme)"
     echo ""
 
     tui_subtitle "Options"
@@ -236,6 +238,7 @@ show_help() {
     tui_dim "  ./setup info         # Rich system dashboard"
     tui_dim "  ./setup backup       # Create a manual snapshot"
     tui_dim "  ./setup logs         # Browse runtime logs"
+    tui_dim "  ./setup extras       # Optional extras installer"
     tui_dim "  inir update          # Wrapper around ./setup update"
     tui_dim "  inir doctor          # Wrapper around ./setup doctor"
     tui_dim "  inir run             # Start iNiR"
@@ -335,6 +338,7 @@ tui_menu() {
         choice=$(tui_choose_rich "What would you like to do?" \
             "${ICON_ARROW}|Update|Check for updates and apply them" \
             "${ICON_STAR}|Theme|Change wallpaper and color scheme" \
+            "${ICON_DOT}|Extras|Install optional extras (iNiR-Walls / SDDM)" \
             "${ICON_DOT}|Config|View and edit shell settings" \
             "${ICON_INFO}|Info|System and shell details dashboard" \
             "${ICON_CHECK}|Doctor|Diagnose and fix problems" \
@@ -359,6 +363,7 @@ tui_menu() {
         Reinstall) IS_UPDATE=true run_install ;;
         Update) run_update ;;
         Theme) run_theme ;;
+        Extras) run_extras ;;
         Config) run_config ;;
         Info) show_info; read -rp "Press Enter to continue..." ;;
         Migrate) run_migrate ;;
@@ -544,9 +549,10 @@ show_info() {
     local theme_meta="${state_dir}/theme-meta.json"
     if [[ -f "$theme_meta" ]]; then
         if command -v jq &>/dev/null; then
-            current_wallpaper=$(jq -r '.wallpaper // "none"' "$theme_meta" 2>/dev/null || echo "none")
+            current_wallpaper=$(jq -r '.wallpaper // .source_path // "none"' "$theme_meta" 2>/dev/null || echo "none")
         else
             current_wallpaper=$(sed -n 's/.*"wallpaper"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$theme_meta" 2>/dev/null | head -1)
+            [[ -n "$current_wallpaper" ]] || current_wallpaper=$(sed -n 's/.*"source_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$theme_meta" 2>/dev/null | head -1)
         fi
         [[ -n "$current_wallpaper" && "$current_wallpaper" != "null" ]] && current_wallpaper="$(basename "$current_wallpaper")"
     fi
@@ -739,8 +745,13 @@ run_theme() {
     local current_scheme="unknown"
     if [[ -f "$theme_meta" ]]; then
         if command -v jq &>/dev/null; then
-            current_wallpaper=$(jq -r '.wallpaper // "none"' "$theme_meta" 2>/dev/null)
+            current_wallpaper=$(jq -r '.wallpaper // .source_path // "none"' "$theme_meta" 2>/dev/null)
             current_scheme=$(jq -r '.scheme // .variant // "unknown"' "$theme_meta" 2>/dev/null)
+        else
+            current_wallpaper=$(sed -n 's/.*"wallpaper"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$theme_meta" 2>/dev/null | head -1)
+            [[ -n "$current_wallpaper" ]] || current_wallpaper=$(sed -n 's/.*"source_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$theme_meta" 2>/dev/null | head -1)
+            current_scheme=$(sed -n 's/.*"scheme"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$theme_meta" 2>/dev/null | head -1)
+            [[ -n "$current_scheme" ]] || current_scheme="unknown"
         fi
     fi
 
@@ -843,6 +854,42 @@ run_theme() {
             else
                 tui_info "No default wallpapers directory found"
             fi
+            ;;
+        *)
+            return 0
+            ;;
+    esac
+
+    echo ""
+    read -rp "Press Enter to continue..."
+}
+
+
+###############################################################################
+# Extras — Optional post-install components
+###############################################################################
+run_extras() {
+    echo ""
+    tui_title "Optional Extras"
+    echo ""
+
+    local action
+    action=$(tui_choose_rich "Extras"         "${ICON_DOT}|Install iNiR-Walls|Download optional wallpaper pack and copy image files"         "${ICON_DOT}|Install ii-pixel-sddm|Install/apply iNiR SDDM login theme"         "${ICON_DOT}|Install both|Run both optional installers"         "${ICON_CIRCLE}|Back|Return to main menu")
+
+    case "$action" in
+        "Install iNiR-Walls")
+            echo ""
+            extras_install_inir_walls
+            ;;
+        "Install ii-pixel-sddm")
+            echo ""
+            extras_install_sddm_theme "ask"
+            ;;
+        "Install both")
+            echo ""
+            extras_install_inir_walls
+            echo ""
+            extras_install_sddm_theme "ask"
             ;;
         *)
             return 0
@@ -1901,7 +1948,7 @@ COMMAND=""
 SUBCMD_ARGS=()
 while [[ $# -gt 0 ]]; do
     case $1 in
-        install|update|migrate|doctor|rollback|my-changes|uninstall|status|config|theme|info|backup|logs)
+        install|update|migrate|doctor|rollback|my-changes|uninstall|status|config|theme|info|backup|logs|extras)
             COMMAND="$1"; shift
             SUBCMD_ARGS=("$@")
             break
@@ -1940,5 +1987,6 @@ case "$COMMAND" in
     info) show_info ;;
     backup) run_backup ;;
     logs) run_logs ;;
+    extras) run_extras ;;
     "") tui_menu ;;
 esac
