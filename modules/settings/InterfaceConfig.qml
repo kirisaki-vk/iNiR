@@ -702,6 +702,47 @@ ContentPage {
                 }
             }
 
+            ColumnLayout {
+                Layout.fillWidth: true
+                visible: !(Config.options?.sidebar?.instantOpen ?? false)
+                spacing: 4
+
+                RowLayout {
+                    spacing: 8
+                    MaterialSymbol {
+                        text: "swipe_right"
+                        iconSize: Appearance.font.pixelSize.hugeass
+                        color: Appearance.m3colors?.m3OnSurface ?? Appearance.colors.colOnLayer1
+                    }
+                    StyledText {
+                        text: Translation.tr("Sidebar animation")
+                        font.pixelSize: Appearance.font.pixelSize.normal
+                        color: Appearance.m3colors?.m3OnSurface ?? Appearance.colors.colOnLayer1
+                    }
+                }
+
+                StyledComboBox {
+                    Layout.fillWidth: true
+                    readonly property var animOptions: [
+                        { displayName: Translation.tr("Slide"), value: "slide" },
+                        { displayName: Translation.tr("Fade"), value: "fade" },
+                        { displayName: Translation.tr("Pop"), value: "pop" },
+                        { displayName: Translation.tr("Reveal"), value: "reveal" }
+                    ]
+                    model: animOptions
+                    textRole: "displayName"
+                    currentIndex: {
+                        const current = Config.options?.sidebar?.animationType ?? "slide"
+                        const idx = animOptions.findIndex(o => o.value === current)
+                        return idx >= 0 ? idx : 0
+                    }
+                    onActivated: index => {
+                        if (index >= 0 && index < animOptions.length)
+                            Config.setNestedValue("sidebar.animationType", animOptions[index].value)
+                    }
+                }
+            }
+
             SettingsSwitch {
                 buttonIcon: "folder_open"
                 text: Translation.tr("Open folder after wallpaper download")

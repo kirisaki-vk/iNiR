@@ -861,6 +861,7 @@ Singleton {
                     property bool requirePasswordToPower: false
                 }
                 property bool materialShapeChars: true
+                property bool enableAnimation: false // Play video/GIF wallpapers on lock screen (default: show first frame)
             }
 
             property JsonObject media: JsonObject {
@@ -1060,6 +1061,7 @@ Singleton {
                 property bool keepRightSidebarLoaded: true
                 property bool keepLeftSidebarLoaded: true
                 property bool instantOpen: false
+                property string animationType: "slide" // "slide" | "fade" | "pop" | "reveal"
                 property bool openFolderOnDownload: false // Open file manager after wallpaper download
                 property JsonObject translator: JsonObject {
                     property bool enable: true

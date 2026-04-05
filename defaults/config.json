@@ -607,6 +607,7 @@
         "centerClock": true,
         "launchOnStartup": false,
         "materialShapeChars": true,
+        "enableAnimation": false,
         "security": {
             "requirePasswordToPower": false,
             "unlockKeyring": true
@@ -766,6 +767,7 @@
         },
         "keepRightSidebarLoaded": true,
         "instantOpen": false,
+        "animationType": "slide",
         "layout": "default",
         "quickSliders": {
             "enable": true,
