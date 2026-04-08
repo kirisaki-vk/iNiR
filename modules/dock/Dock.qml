@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs
 import qs.services
 import qs.modules.common
@@ -35,7 +37,13 @@ Scope {
             const list = Config.options?.dock?.screenList ?? [];
             if (!list || list.length === 0)
                 return screens;
-            return screens.filter(screen => list.includes(screen.name));
+            const matchedScreens = screens.filter(screen => {
+                const screenName = screen?.name ?? "";
+                return screenName.length > 0 && list.includes(screenName);
+            });
+            // Fallback safety: stale monitor names (e.g. output re-enumeration after VRR changes)
+            // should never hide the dock on every screen.
+            return matchedScreens.length > 0 ? matchedScreens : screens;
         }
 
         Loader {
