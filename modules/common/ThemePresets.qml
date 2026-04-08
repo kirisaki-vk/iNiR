@@ -3250,44 +3250,17 @@ Singleton {
         const enableVesktop = Config.options?.appearance?.wallpaperTheming?.enableVesktop ?? true;
         const enableTerminal = Config.options?.appearance?.wallpaperTheming?.enableTerminal ?? true;
         
-        // Apply GTK theme (if enabled)
-        if (enableAppsAndShell) {
+        // Manual preset themes must fan out to the SAME pipeline used by
+        // wallpaper auto-generation so terminals/editors/chrome/spicetify/sddm/
+        // steam/pear all stay in sync with shell tokens.
+        if (enableAppsAndShell || enableTerminal) {
             Qt.callLater(() => {
-                const script = Directories.scriptsPath + "/colors/apply-gtk-theme.sh";
                 Quickshell.execDetached([
-                    script,
-                    c.m3background,
-                    c.m3onBackground,
-                    c.m3primary,
-                    c.m3onPrimary,
-                    c.m3surface,
-                    c.m3surfaceDim
+                    "/usr/bin/bash",
+                    Directories.scriptsPath + "/colors/applycolor.sh"
                 ]);
             });
         }
-        
-        // Apply terminal colors (if enabled)
-        if (enableTerminal) {
-            applyTerminalColors(c);
-        }
-    }
-    
-    function applyTerminalColors(c) {
-        // Generate material_colors.scss from preset colors for terminal theming
-        const scssContent = generateScssFromColors(c);
-        const scssPath = Directories.generatedMaterialScssPath;
-        
-        // Write scss file
-        presetScssFileView.path = Qt.resolvedUrl(scssPath);
-        presetScssFileView.setText(scssContent);
-        
-        // Run applycolor.sh to apply terminal colors
-        Qt.callLater(() => {
-            Quickshell.execDetached([
-                "/usr/bin/bash",
-                Directories.scriptsPath + "/colors/applycolor.sh"
-            ]);
-        });
     }
     
     function generateScssFromColors(c) {
@@ -3471,10 +3444,6 @@ Singleton {
         scss += `$term15: ${term15};\n`;
         
         return scss;
-    }
-    
-    FileView {
-        id: presetScssFileView
     }
     
     function applyGtkTheme(c) {

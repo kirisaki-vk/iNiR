@@ -19,6 +19,8 @@ session-*.md
 **/codemap.md
 
 # AI tool directories
+.agents/
+.vera/
 .claude/
 .cursor/
 .continue/
@@ -60,6 +62,7 @@ vscode_themegen
 opencode_themegen
 system24_themegen
 zed_themegen
+!scripts/colors/system24_themegen/
 
 # ── Python ────────────────────────────────────────────────────
 __pycache__/

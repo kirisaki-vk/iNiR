@@ -30,7 +30,8 @@ find_terminal_ancestor() {
   while [[ "$pid" -gt 1 ]] && [[ $visited -lt 20 ]]; do
     local comm
     comm=$(< "/proc/$pid/comm" 2>/dev/null) || break
-    if [[ -n "${KNOWN_TERMINALS[$comm]+_}" ]]; then
+    [[ -n "$comm" ]] || break
+    if [[ -n "$comm" && -n "${KNOWN_TERMINALS[$comm]+_}" ]]; then
       printf '%s\n' "${KNOWN_TERMINALS[$comm]}"
       return 0
     fi
@@ -84,6 +85,8 @@ apply_term_sequences() {
   # Only include pts devices whose terminal ancestor has theming enabled.
   local safe_pts=()
   for pid in $shell_pids; do
+    [[ -d "/proc/$pid" ]] || continue
+
     local tty_link
     tty_link=$(readlink "/proc/$pid/fd/0" 2>/dev/null || true)
     [[ "$tty_link" =~ ^/dev/pts/([0-9]+)$ ]] || continue
