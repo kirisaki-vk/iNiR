@@ -395,6 +395,7 @@ apply_qt_runtime_env() {
             XDG_DATA_DIRS="$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
         [[ -d "/var/lib/flatpak/exports/share" ]] && \
             XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$XDG_DATA_DIRS"
+        true
     fi
 }
 
