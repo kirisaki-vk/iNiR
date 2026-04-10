@@ -27,7 +27,8 @@ config_bool() {
   local query="$1"
   local fallback="$2"
   if [[ -f "$CONFIG_FILE" ]] && command -v jq >/dev/null 2>&1; then
-    jq -r "$query // $fallback" "$CONFIG_FILE" 2>/dev/null || printf '%s\n' "$fallback"
+    # jq '//' treats false as null — use explicit null check so false is preserved
+    jq -r "if ($query) == null then $fallback else ($query) end" "$CONFIG_FILE" 2>/dev/null || printf '%s\n' "$fallback"
   else
     printf '%s\n' "$fallback"
   fi
