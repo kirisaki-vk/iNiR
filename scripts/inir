@@ -1152,6 +1152,14 @@ ensure_service_unit_available() {
     # Always reinstall the service template to pick up improvements (e.g. KillMode,
     # rate limits). install_user_service is cheap — just a sed + cp + daemon-reload.
     install_user_service >/dev/null
+
+    # Warn if effective KillMode isn't process — child apps (e.g. mpv) would be
+    # killed on shell restart until the user runs 'inir service install'.
+    local effective_killmode
+    effective_killmode=$(systemctl --user show -p KillMode inir.service 2>/dev/null | cut -d= -f2)
+    if [ -n "$effective_killmode" ] && [ "$effective_killmode" != "process" ]; then
+        echo "WARNING: inir.service KillMode is '$effective_killmode' (expected 'process') — run 'inir service install' to fix" >&2
+    fi
 }
 
 run_service_command() {
