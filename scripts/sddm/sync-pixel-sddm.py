@@ -20,6 +20,27 @@ THEME_DIR = f"/usr/share/sddm/themes/{THEME_NAME}"
 THEME_CONF = os.path.join(THEME_DIR, "theme.conf")
 ASSETS_DIR = os.path.join(THEME_DIR, "assets")
 
+# Canonical template structure — restored when theme.conf is corrupted.
+# Only the structural/metadata lines; color keys are appended by update_theme_conf().
+THEME_CONF_TEMPLATE = """\
+[SddmTheme]
+Name=ii-pixel
+Description=iNiR SDDM login screen — Material You dynamic colors
+Type=sddm-theme
+Author=iNiR project
+Version=1.0
+Website=https://github.com/snowarch/iNiR
+Screenshot=
+MainScript=Main.qml
+ConfigFile=theme.conf
+
+[General]
+background=assets/background.png
+defaultBackground=assets/background.png
+blurRadius=50
+
+# iNiR Material You colors — updated automatically by sync-pixel-sddm.py on wallpaper change"""
+
 # When invoked via `sudo`, resolve paths against the real user's home,
 # not root's home — SUDO_USER contains the original username.
 _sudo_user = os.environ.get("SUDO_USER", "")
@@ -120,13 +141,27 @@ def read_material_shape_chars():
 
 
 def update_theme_conf(colors):
-    """Update ii-pixel theme.conf [General] section with new colors."""
+    """Update ii-pixel theme.conf [General] section with new colors.
+
+    Self-heals corrupted files: if the [General] section or
+    ``background=`` key are missing, the canonical template structure
+    is restored before applying color values.
+    """
     if not os.path.isfile(THEME_CONF):
         print(f"[sddm-pixel] theme.conf not found: {THEME_CONF}")
         return False
 
     with open(THEME_CONF) as f:
         lines = f.read().split("\n")
+
+    # Detect corruption: [General] or the background= directive missing.
+    has_general = any("[General]" in l for l in lines)
+    has_background = any(l.strip().startswith("background=") for l in lines)
+    if not has_general or not has_background:
+        print(
+            "[sddm-pixel] theme.conf missing structural elements — restoring template"
+        )
+        lines = THEME_CONF_TEMPLATE.split("\n")
 
     remaining = dict(colors)
     remaining["materialShapeChars"] = read_material_shape_chars()
