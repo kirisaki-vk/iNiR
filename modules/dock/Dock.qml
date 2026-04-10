@@ -88,7 +88,8 @@ Scope {
                 WlrLayershell.namespace: "quickshell:dock"
                 color: "transparent"
 
-                mask: Region { item: GameMode.shouldHidePanels ? null : dockMouseArea }
+                Item { id: emptyMask; width: 0; height: 0 }
+                mask: Region { item: GameMode.shouldHidePanels ? emptyMask : dockMouseArea }
 
                 MouseArea {
                     id: dockMouseArea

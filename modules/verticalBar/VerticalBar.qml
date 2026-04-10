@@ -73,8 +73,9 @@ Scope {
                 WlrLayershell.namespace: "quickshell:verticalBar"
                 // WlrLayershell.layer: WlrLayer.Overlay // TODO enable this when bar can hide when fullscreen
                 implicitWidth: Appearance.sizes.verticalBarWidth + Appearance.rounding.screenRounding
+                Item { id: emptyMask; width: 0; height: 0 }
                 mask: Region {
-                    item: GameMode.shouldHidePanels ? null : hoverMaskRegion
+                    item: GameMode.shouldHidePanels ? emptyMask : hoverMaskRegion
                 }
                 color: "transparent"
 

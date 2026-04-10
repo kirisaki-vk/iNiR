@@ -83,7 +83,7 @@ Singleton {
 
     // Hysteresis: require multiple consecutive checks to change auto state
     property int _fullscreenCount: 0
-    readonly property int _hysteresisThreshold: 2
+    readonly property int _hysteresisThreshold: 1
 
     // State file path
     readonly property string _stateFile: Quickshell.env("HOME") + "/.local/state/quickshell/user/gamemode_active"
@@ -172,7 +172,13 @@ Singleton {
         // Always update hasAnyFullscreenWindow (for toast suppression)
         hasAnyFullscreenWindow = checkAnyFullscreenWindow()
 
-        const focusedWindow = NiriService.activeWindow
+        // Find focused window from the current windows array, not activeWindow.
+        // activeWindow is only refreshed on focus-change events, so it's stale
+        // when a window changes fullscreen state without changing focus
+        // (e.g. pressing F11 on the already-focused window).
+        const windows = NiriService.windows
+        const focusedWindow = (Array.isArray(windows) && windows.find(w => w.is_focused))
+            || NiriService.activeWindow
         const isFullscreen = isWindowFullscreen(focusedWindow)
 
         // Always track focused window state (drives shouldHidePanels reactively)
@@ -203,7 +209,7 @@ Singleton {
     // State persistence - read
     FileView {
         id: stateReader
-        path: Qt.resolvedUrl(root._stateFile)
+        path: root._stateFile
 
         onLoaded: {
             const content = stateReader.text()
@@ -242,10 +248,10 @@ Singleton {
         }
 
         function onWindowsChanged() {
-            // Only update hasAnyFullscreenWindow if not already checking
-            if (!checkDebounce.running) {
-                root.hasAnyFullscreenWindow = root.checkAnyFullscreenWindow()
-            }
+            // A window property changed (incl. is_fullscreen). Trigger full
+            // auto-detection — not just hasAnyFullscreenWindow — so we catch
+            // the focused window going fullscreen without a focus change.
+            root.checkFullscreen()
         }
     }
 
