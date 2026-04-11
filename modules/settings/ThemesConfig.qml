@@ -550,12 +550,13 @@ ContentPage {
                 currentValue: Config.options?.appearance?.palette?.type ?? "auto"
                 onSelected: newValue => {
                     Config.setNestedValue("appearance.palette.type", newValue)
-                    if (ThemeService.isAutoTheme) {
-                        Quickshell.execDetached(["/usr/bin/bash", "-c", `${Directories.wallpaperSwitchScriptPath} --noswitch --type ${newValue}`]);
-                    } else {
+                    if (!ThemeService.isAutoTheme) {
+                        // Manual preset: apply variant immediately via MaterialThemeLoader
                         const hex = MaterialThemeLoader.colorToHex(Appearance.m3colors.m3primary)
                         MaterialThemeLoader.applySchemeVariant(hex, newValue)
                     }
+                    // Auto theme: ThemeService detects palette type change in
+                    // liveRegenSignature and regenerates automatically.
                 }
                 options: [
                     { "value": "auto", "displayName": Translation.tr("Auto") },
@@ -1065,9 +1066,9 @@ ContentPage {
                         color: {
                             const isDark = Appearance.m3colors.darkmode;
                             const adj = Config.options?.appearance?.wallpaperTheming?.terminalColorAdjustments ?? {};
-                            const sat = adj.saturation ?? 0.40;
-                            const bright = adj.brightness ?? 0.55;
-                            const harmony = adj.harmony ?? 0.15;
+                            const sat = adj.saturation ?? 0.65;
+                            const bright = adj.brightness ?? 0.60;
+                            const harmony = adj.harmony ?? 0.40;
 
                             // Simplified preview - actual generation is more complex
                             if (index === 0) return Appearance.m3colors.m3surfaceContainerLowest;
@@ -1112,7 +1113,7 @@ ContentPage {
                 id: saturationSpinBox
                 icon: "palette"
                 text: Translation.tr("Color Saturation") + " (%)"
-                value: Math.round((Config.options?.appearance?.wallpaperTheming?.terminalColorAdjustments?.saturation ?? 0.40) * 100)
+                value: Math.round((Config.options?.appearance?.wallpaperTheming?.terminalColorAdjustments?.saturation ?? 0.65) * 100)
                 from: 10
                 to: 80
                 stepSize: 5
@@ -1130,7 +1131,7 @@ ContentPage {
                 id: brightnessSpinBox
                 icon: "brightness_6"
                 text: Translation.tr("Color Brightness") + " (%)"
-                value: Math.round((Config.options?.appearance?.wallpaperTheming?.terminalColorAdjustments?.brightness ?? 0.55) * 100)
+                value: Math.round((Config.options?.appearance?.wallpaperTheming?.terminalColorAdjustments?.brightness ?? 0.60) * 100)
                 from: 35
                 to: 75
                 stepSize: 5

@@ -235,12 +235,13 @@ ContentPage {
                 currentValue: Config.options?.appearance?.palette?.type ?? "auto"
                 onSelected: newValue => {
                     Config.setNestedValue("appearance.palette.type", newValue)
-                    if (ThemeService.isAutoTheme) {
-                        Quickshell.execDetached(["/usr/bin/bash", "-c", `${Directories.wallpaperSwitchScriptPath} --noswitch --type ${newValue}`]);
-                    } else {
+                    if (!ThemeService.isAutoTheme) {
+                        // Manual preset: apply variant immediately via MaterialThemeLoader
                         const hex = MaterialThemeLoader.colorToHex(Appearance.m3colors.m3primary)
                         MaterialThemeLoader.applySchemeVariant(hex, newValue)
                     }
+                    // Auto theme: ThemeService detects palette type change in
+                    // liveRegenSignature and regenerates automatically.
                 }
                 options: [
                     {

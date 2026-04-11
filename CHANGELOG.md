@@ -12,11 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sidebar drop, swing, and elastic animations**: Three new sidebar open/close animation types in addition to the existing slide/fade/pop/reveal — drop (vertical slide from above with fade), swing (horizontal scale from edge), and elastic (overshoot bounce with scale). Widget stagger animation intensity reduced for subtler startup.
 - **YTMusic session resume**: Playback state (URL, position, title, etc.) persisted to config every 5s while playing. On shell restart, the last session is restored automatically if playback was active. New `Config.setNestedValues()` batch function prevents multiple config-change emissions during multi-key writes.
 - **WAYLAND_DISPLAY auto-detection**: `apply_qt_runtime_env` now probes `/run/user/<uid>/wayland-*` when `WAYLAND_DISPLAY` is unset — prevents Qt XCB fallback crash on boot-time systemd starts where the compositor hasn't exported the variable yet. `ensure_systemd_graphical_env` added to the bare `start` code path.
+- **Waffle theme settings parity**: Color strength slider, soften colors toggle, and terminal color adjustment sliders (saturation, brightness, harmony, background brightness) with reset button added to WThemesPage — matches ii's ThemesConfig feature set.
+- **Waffle font selector widget**: New `WSettingsFontSelector` component — searchable popup over all installed system fonts with featured fonts pinned at top. Used for desktop clock font selection, replacing the previous hardcoded 5-option choice group.
 
 ### Changed
 - **Dock indicator dots redesign**: Focused dot is now wider (pill shape) with accent color per visual style (angel/inir/aurora/material). Unfocused dots are narrow and dimmed. Fallback dim dot shown for inactive apps when `showAllWindowDots` is off. Config properties hoisted to root for reuse. Vertical-mode anchor overrides removed (unused in current dock modes).
 - **Module list sync**: iiShellUpdate added to ii family, iiTilingOverlay moved from waffle shared to ii-only, iiControlPanel removed from waffle shared. Module lists in ModulesConfig.qml synced with shell.qml. DockAppButton pear-desktop app ID updated. `enablePearDesktop` enabled by default.
 - **Pear Desktop package detection**: Auto-detect whether `youtube-music` (CachyOS) or `pear-desktop` (AUR) is installed instead of hardcoding one name. CDP port changed from 9222 to 9223 to avoid spicetify conflict.
+- **Fresh install defaults**: Material settings UI defaults to overlay mode. Waffle activation watermark enabled by default. Waffle widgets panel slimmed to DateTime + Weather + Media (System, QuickActions, ColorScheme disabled). Wallpaper transition type defaults to random instead of crossfade. Waffle desktop clock font defaults to Roboto Flex.
+- **Fresh install packages**: gowall-bin and mission-center added to Arch AUR packages. mission-center added to deps-map for all distros (flatpak fallback). SDDM theme prompt defaults to yes.
+- **Waffle background settings order**: Desktop Clock card moved to end of WBackgroundPage — wallpaper controls, effects, and backdrop come first.
 
 ### Fixed
 - **Dock preview popup stability**: ScriptModel `objectProp` with stable `previewKey` prevents delegate recreation on model rebuild (fixes icon flash). 500ms close grace period prevents popup closure when resizing after closing a window moves the cursor outside bounds. Removed stale `syncVisibleWindows`/`maybeCaptureMissingPreviews` machinery — replaced by simple `onLiveToplevelsChanged` auto-close. Closing animation removed for immediate response.
@@ -28,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Overview search layout without dashboard**: Workspace grid loader now hides from Column layout during search, preventing vertical centering breakage and results pushed to top of screen.
 - **Overview wallpaper without effects**: Workspace thumbnails render unblurred with OpacityMask fallback when `Appearance.effectsEnabled` is false — previously no wallpaper showed at all.
 - **Media player selection**: Fixed player selection logic and scroll volume consistency.
+- **Waffle dark mode toggle**: Was calling switchwall.sh directly, bypassing MaterialThemeLoader's force-apply gate — preset themes silently ignored mode changes. Now routes through `MaterialThemeLoader.setDarkMode()`.
+- **Double palette type regeneration**: Palette type changes in both ii and waffle settings fired switchwall.sh immediately AND through ThemeService's 260ms debounce, causing a race condition. Removed redundant direct calls — ThemeService's `liveRegenSignature` handles auto-theme regeneration automatically.
+- **Terminal color adjustment defaults**: ThemesConfig preview and spinbox fallbacks mismatched Config schema — saturation showed 40% instead of 65%, brightness 55% instead of 60%, harmony preview used 0.15 instead of 0.40.
+- **Waffle taskbar task manager icon**: Icon name `monitoring` didn't exist in the fluent icon set, rendering blank. Changed to `pulse`.
 
 ## [2.18.0] - 2026-04-09
 

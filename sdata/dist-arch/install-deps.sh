@@ -292,6 +292,12 @@ tui_info "Installing AUR packages..."
 AUR_PACKAGES=(
   # Qt6 extras (not in official repos)
   qt6-avif-image-plugin
+
+  # Wallpaper effects editor (used by Gowall integration)
+  gowall-bin
+
+  # System monitor (default task manager)
+  mission-center
   
   # Note: Python deps are handled via uv + requirements.txt, not AUR packages
 )

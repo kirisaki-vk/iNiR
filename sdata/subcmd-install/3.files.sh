@@ -313,8 +313,8 @@ fi
 if command -v sddm &>/dev/null; then
   if [[ "${INSTALL_FIRSTRUN}" == true ]]; then
     if [[ "${ask}" == "true" ]]; then
-      tui_info "Optional: install ii-pixel-sddm login theme (matches iNiR lockscreen)."
-      if tui_confirm "Install ii-pixel-sddm now?" "no"; then
+      tui_info "Recommended: install ii-pixel-sddm login theme (matches iNiR lockscreen)."
+      if tui_confirm "Install ii-pixel-sddm now?" "yes"; then
         extras_install_sddm_theme "yes"
       else
         log_info "Skipping ii-pixel-sddm setup"
