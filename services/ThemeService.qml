@@ -81,8 +81,9 @@ Singleton {
                 // Variant active: apply preset instantly, then regenerate variant colors
                 ThemePresets.applyPreset(themeId, false, true);
                 const seedColor = MaterialThemeLoader.colorToHex(Appearance.m3colors.m3primary)
-                root._log("[ThemeService] setTheme with variant", paletteType, "seed", seedColor);
-                MaterialThemeLoader.applySchemeVariant(seedColor, paletteType)
+                const mode = Appearance.m3colors.darkmode ? "dark" : "light"
+                root._log("[ThemeService] setTheme with variant", paletteType, "seed", seedColor, "mode", mode);
+                MaterialThemeLoader.applySchemeVariant(seedColor, paletteType, mode)
             } else {
                 ThemePresets.applyPreset(themeId, applyExternal);
                 if (applyExternal && vesktopEnabled) {
@@ -133,8 +134,9 @@ Singleton {
                 const seedColor = configAccent.length > 0
                     ? configAccent
                     : MaterialThemeLoader.colorToHex(Appearance.m3colors.m3primary)
-                root._log("[ThemeService] Re-applying variant", paletteType, "with seed", seedColor);
-                MaterialThemeLoader.applySchemeVariant(seedColor, paletteType)
+                const mode = Appearance.m3colors.darkmode ? "dark" : "light"
+                root._log("[ThemeService] Re-applying variant", paletteType, "with seed", seedColor, "mode", mode);
+                MaterialThemeLoader.applySchemeVariant(seedColor, paletteType, mode)
                 if (applyExternal && vesktopEnabled) {
                     root._triggerVesktopThemeGeneration()
                 }
@@ -183,7 +185,8 @@ Singleton {
                 const seedColor = configAccent.length > 0
                     ? configAccent
                     : MaterialThemeLoader.colorToHex(Appearance.m3colors.m3primary)
-                MaterialThemeLoader.applySchemeVariant(seedColor, paletteType)
+                const mode = Appearance.m3colors.darkmode ? "dark" : "light"
+                MaterialThemeLoader.applySchemeVariant(seedColor, paletteType, mode)
             } else {
                 ThemePresets.applyPreset(currentTheme, true);
             }

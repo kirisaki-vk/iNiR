@@ -60,7 +60,9 @@ Singleton {
     // Apply a scheme variant using a seed color.
     // Works for both auto and static themes. Persists seed in config, then runs
     // the color generation script. Colors are force-applied on process exit.
-    function applySchemeVariant(seedColor: string, variant: string): void {
+    // `mode` must be "dark" or "light" — without it, switchwall.sh falls back to
+    // gsettings which is typically "prefer-dark", breaking light presets.
+    function applySchemeVariant(seedColor: string, variant: string, mode: string): void {
         // Clear any stale force flag from a previous run
         root._forceApply = false
         Config.setNestedValue("appearance.palette.accentColor", seedColor)
@@ -70,7 +72,8 @@ Singleton {
             "--noswitch",
             "--skip-accent-write",
             "--color", seedColor,
-            "--type", variant
+            "--type", variant,
+            "--mode", mode
         ]
         schemeVariantProc.running = true
     }
