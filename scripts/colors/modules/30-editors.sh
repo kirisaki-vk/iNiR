@@ -224,7 +224,7 @@ apply_code_editors() {
 
   local enable_vscode enable_neovim
   enable_vscode=$(config_json 'if .appearance.wallpaperTheming | has("enableVSCode") then .appearance.wallpaperTheming.enableVSCode else true end' true)
-  enable_neovim=$(config_json 'if .appearance.wallpaperTheming | has("enableNeovim") then .appearance.wallpaperTheming.enableNeovim else true end' true)
+  enable_neovim=$(config_bool '.appearance.wallpaperTheming.enableNeovim' false)
 
   if [[ "$enable_neovim" == 'true' ]] && [[ -d "$NEOVIM_CONFIG_DIR" || -x "$(command -v nvim 2>/dev/null)" ]]; then
     generate_neovim_spec "$colors_file" "$TERMINAL_FILE"
@@ -299,7 +299,7 @@ apply_code_editors() {
 
   if command -v opencode &>/dev/null; then
     local enable_opencode
-    enable_opencode=$(config_bool '.appearance.wallpaperTheming.enableOpenCode' true)
+    enable_opencode=$(config_bool '.appearance.wallpaperTheming.enableOpenCode' false)
     if [[ "$enable_opencode" == 'true' ]]; then
       if ensure_opencode_themegen; then
         "$OPENCODE_THEMEGEN_BIN" "$SCSS_FILE" "$colors_file" "$TERMINAL_FILE" >> "$STATE_DIR/user/generated/code_editor_themes.log" 2>&1 || true
