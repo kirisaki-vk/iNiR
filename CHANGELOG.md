@@ -5,6 +5,30 @@ All notable changes to iNiR will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.1] - 2026-04-16
+
+### Added
+- **Steam notification positioning**: Steam notification toasts now appear at bottom-right corner instead of default position.
+
+### Fixed
+- **Systemd service environment race**: `WAYLAND_DISPLAY` and `NIRI_SOCKET` now properly imported before shell start, preventing Qt XCB fallback and empty socket path crashes on fresh boot.
+- **FadeLoader race condition**: Right sidebar and overlay panels could crash during rapid open/close cycles due to component lifecycle timing issues.
+- **Applications settings state sync**: Browser selection ComboBox now properly reflects current config value. XDG default browser integration fixed.
+- **Wallhaven HTTP requests**: Switched from Qt NetworkAccessManager to curl to bypass User-Agent restrictions that were blocking API requests.
+- **Mic slider state sync**: Microphone volume slider and mute state now stay in sync with source changes. Volume persistence fixed across source switches.
+- **Bar sidebar hover hitbox**: Sidebar open/close hover detection now scoped to button area only, preventing false triggers from adjacent bar elements.
+- **NIRI_SOCKET boot race**: NiriService now waits for valid socket path before attempting connection, eliminating empty path errors on session start.
+- **IPC keybind failures at boot**: Grace period bug and missing retry logic caused keybind registration to fail silently during shell startup. Now retries with exponential backoff.
+
+### Improved
+- **Documentation audit**: Fixed broken wiki links, updated stale module lists, clarified internal terminology, improved config documentation clarity.
+- **Wiki index rendering**: Grid card separators changed from `***` to `---` for proper Material theme rendering.
+
+### Changed
+- **Boot-time optimization**: Reduced service initialization contention and hardened maintenance flow error handling.
+- **Theming defaults**: Neovim theming disabled by default. Added missing wallpaper theming toggle controls to settings UI.
+- **NVIDIA telemetry**: Hybrid dGPU suspend-aware polling, fixed GPU detection on multi-GPU systems *(#106)*.
+
 ## [2.21.0] - 2026-04-12
 
 ### Added
