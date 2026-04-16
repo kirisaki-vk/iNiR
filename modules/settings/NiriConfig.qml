@@ -3085,6 +3085,15 @@ ContentPage {
                     readonly property int _rev: AppLauncher._configRevision
                     readonly property var presetOptions: { void(_rev); return AppLauncher.presetOptions(modelData.id) }
                     readonly property string presetId: { void(_rev); return AppLauncher.presetIdFor(modelData.id) }
+                    property bool showCustomField: presetId === "__custom__"
+
+                    // Force resync when presetId changes (QML ComboBox breaks bindings on user interaction)
+                    onPresetIdChanged: {
+                        Qt.callLater(() => {
+                            appCombo.currentIndex = root.choiceIndex(appCombo.model, presetId)
+                            showCustomField = (presetId === "__custom__")
+                        })
+                    }
 
                     StyledText {
                         text: modelData.label
@@ -3102,20 +3111,25 @@ ContentPage {
                     }
 
                     StyledComboBox {
+                        id: appCombo
                         Layout.fillWidth: true
                         model: presetOptions
                         textRole: "displayName"
                         currentIndex: root.choiceIndex(model, presetId)
                         onActivated: {
                             const selectedValue = model[currentIndex].value
-                            if (selectedValue !== "__custom__")
+                            if (selectedValue === "__custom__") {
+                                showCustomField = true
+                            } else {
+                                showCustomField = false
                                 AppLauncher.applyPreset(modelData.id, selectedValue)
+                            }
                         }
                     }
 
                     MaterialTextField {
                         Layout.fillWidth: true
-                        visible: presetId === "__custom__"
+                        visible: showCustomField
                         placeholderText: modelData.placeholder
                         text: { void(_rev); return AppLauncher.commandFor(modelData.id) }
                         onEditingFinished: AppLauncher.setCustomCommand(modelData.id, text)

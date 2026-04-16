@@ -183,6 +183,22 @@ Singleton {
             return
 
         Config.setNestedValue(`apps.${slotId}`, preset.command)
+
+        // Sync browser changes to xdg-settings
+        if (slotId === "browser") {
+            const desktopFileMap = {
+                "firefox": "firefox.desktop",
+                "zen-browser": "zen.desktop",
+                "librewolf": "librewolf.desktop",
+                "chromium": "chromium.desktop",
+                "google-chrome-stable": "google-chrome.desktop",
+                "brave-browser": "brave-browser.desktop"
+            }
+            const desktopFile = desktopFileMap[preset.command]
+            if (desktopFile) {
+                Quickshell.execDetached(["xdg-settings", "set", "default-web-browser", desktopFile])
+            }
+        }
     }
 
     function setCustomCommand(slotId: string, command: string): void {
